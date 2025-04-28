@@ -1,0 +1,39 @@
+{
+  "CallerReference": "1745785739",
+  "Aliases": {
+    "Quantity": 1,
+    "Items": ["texpr.com"]
+  },
+  "DefaultRootObject": "index.html",
+  "Origins": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Id": "S3Origin",
+        "DomainName": "texpr-pub-prod.s3.amazonaws.com",
+        "S3OriginConfig": { "OriginAccessIdentity": "" }
+      }
+    ]
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "S3Origin",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "AllowedMethods": {
+      "Quantity": 2,
+      "Items": ["GET","HEAD"]
+    },
+    "ForwardedValues": {
+      "QueryString": false,
+      "Cookies": { "Forward": "none" }
+    },
+    "MinTTL": 0,
+    "DefaultTTL": 86400,
+    "MaxTTL": 31536000
+  },
+  "ViewerCertificate": {
+    "ACMCertificateArn": "arn:aws:acm:us-west-2:927483378981:certificate/df5a12fd-23da-4b75-b321-ab75a6500f05",
+    "SSLSupportMethod": "sni-only",
+    "MinimumProtocolVersion": "TLSv1.2_2019"
+  },
+  "Enabled": true
+}
