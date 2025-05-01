@@ -39,7 +39,7 @@ classifiers = [
 
 dependencies = [
     "flowmark>=0.4.1",
-    "kash-media>=0.3.9",
+    "kash-media>=0.3.10",
     "litellm==1.67.4.post1",
     "rich>=14.0.0",
 ]
@@ -63,7 +63,7 @@ texpr = "texpr.texpr_cli:main"
 
 [tool.uv.sources]
 # For bleeding edge:
-kash-media = { git = "https://github.com/jlevy/kash-media.git" }
+# kash-media = { git = "https://github.com/jlevy/kash-media.git" }
 # For local development:
 # kash-media = { path = "../kash-media", editable = true }
 
