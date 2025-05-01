@@ -11,13 +11,12 @@ from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
 
-from flowmark import first_sentence
+from flowmark import reformat_file
 from kash.actions.core.render_as_html import render_as_html
 from kash.config.logger import get_log_settings
 from kash.config.setup import kash_setup
 from kash.exec import prepare_action_input
 from kash.kits.docs.actions.text.docx_to_md import docx_to_md
-from kash.kits.docs.actions.text.endnotes_to_footnotes import endnotes_to_footnotes
 from kash.kits.docs.actions.text.format_gemini_report import format_gemini_report
 from kash.shell.utils.argparse_utils import WrappedColorFormatter
 from kash.workspaces import get_ws
@@ -36,10 +35,26 @@ DEFAULT_WORK_ROOT = Path("./textpress")
 
 CLI_ACTIONS = [
     docx_to_md,
-    endnotes_to_footnotes,
     render_as_html,
     format_gemini_report,
 ]
+
+
+def reformat_md(
+    md_path: Path,
+    output: Path | None,
+    width: int = 88,
+    semantic: bool = True,
+    nobackup: bool = False,
+) -> None:
+    """
+    Auto-format a markdown file. Uses flowmark to do readable line wrapping and
+    Markdown-aware cleanups.
+    """
+    inplace = output is None
+    reformat_file(
+        md_path, output, inplace=inplace, width=width, semantic=semantic, nobackup=nobackup
+    )
 
 
 def get_app_version() -> str:
@@ -68,13 +83,28 @@ def build_parser() -> argparse.ArgumentParser:
         "--rerun", action="store_true", help="rerun actions even if the outputs already exist"
     )
 
-    # Parsers for each action.
+    # Parsers for each command.
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
+
+    subparser = subparsers.add_parser(
+        "reformat_md",
+        help=reformat_md.__doc__,
+        description=reformat_md.__doc__,
+        formatter_class=WrappedColorFormatter,
+    )
+    subparser.add_argument("input_path", type=str, help="Input file (use '-' for stdin)")
+    subparser.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        default="-",
+        help="Output file (use '-' for stdout)",
+    )
 
     for func in CLI_ACTIONS:
         subparser = subparsers.add_parser(
             func.__name__,
-            help=first_sentence(func.__doc__ or ""),
+            help=func.__doc__,
             description=func.__doc__,
             formatter_class=WrappedColorFormatter,
         )
@@ -106,22 +136,28 @@ def main() -> None:
     with ws:
         log.info("Running action: %s", args.subcommand)
 
-        input = prepare_action_input(args.input_path)
+        # As a convenience also allow dashes in the subcommand name.
+        subcommand = args.subcommand.replace("-", "_")
 
+        # Handle simple commands.
+        if subcommand == "format_md":
+            reformat_md(args.input_path, args.output)
+            return
+
+        # Handle kash actions.
         try:
-            if args.subcommand == docx_to_md.__name__:
+            input = prepare_action_input(args.input_path)
+            if subcommand == docx_to_md.__name__:
                 docx_to_md(input.items[0])
-            elif args.subcommand == endnotes_to_footnotes.__name__:
-                endnotes_to_footnotes(input.items[0])
-            elif args.subcommand == render_as_html.__name__:
+            elif subcommand == render_as_html.__name__:
                 render_as_html(input)
-            elif args.subcommand == format_gemini_report.__name__:
+            elif subcommand == format_gemini_report.__name__:
                 format_gemini_report(input.items[0])
             else:
                 raise ValueError(f"Unknown subcommand: {args.subcommand}")
 
         except Exception as e:
-            log.error("Error running action: %s: %s", args.subcommand, e)
+            log.error("Error running action: %s: %s", subcommand, e)
             log.info("Error details", exc_info=e)
             log_file = get_log_settings().log_file_path
             rprint(f"[bright_black]See logs for more details: {fmt_path(log_file)}[/bright_black]")
