@@ -11,18 +11,16 @@ from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
 
-from flowmark import reformat_file
-from kash.actions.core.render_as_html import render_as_html
-from kash.config.logger import get_log_settings
-from kash.config.setup import kash_setup
-from kash.exec import prepare_action_input
-from kash.kits.docs.actions.text.docx_to_md import docx_to_md
-from kash.kits.docs.actions.text.format_gemini_report import format_gemini_report
 from kash.shell.utils.argparse_utils import WrappedColorFormatter
-from kash.workspaces import get_ws
-from kash.workspaces.workspaces import switch_to_ws
 from prettyfmt import fmt_path
 from rich import print as rprint
+
+from .commands import (
+    docx_to_md,
+    format_gemini_report,
+    reformat_md,
+    render_as_html,
+)
 
 log = logging.getLogger(__name__)
 
@@ -31,30 +29,6 @@ APP_NAME = "texpr"
 DESCRIPTION = """Textpress: Simple publishing for complex ideas"""
 
 DEFAULT_WORK_ROOT = Path("./textpress")
-
-
-CLI_ACTIONS = [
-    docx_to_md,
-    render_as_html,
-    format_gemini_report,
-]
-
-
-def reformat_md(
-    md_path: Path,
-    output: Path | None,
-    width: int = 88,
-    semantic: bool = True,
-    nobackup: bool = False,
-) -> None:
-    """
-    Auto-format a markdown file. Uses flowmark to do readable line wrapping and
-    Markdown-aware cleanups.
-    """
-    inplace = output is None
-    reformat_file(
-        md_path, output, inplace=inplace, width=width, semantic=semantic, nobackup=nobackup
-    )
 
 
 def get_app_version() -> str:
@@ -101,7 +75,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Output file (use '-' for stdout)",
     )
 
-    for func in CLI_ACTIONS:
+    for func in [
+        docx_to_md,
+        format_gemini_report,
+        render_as_html,
+    ]:
         subparser = subparsers.add_parser(
             func.__name__,
             help=func.__doc__,
@@ -113,9 +91,12 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main() -> None:
-    parser = build_parser()
-    args = parser.parse_args()
+def run_command(args: argparse.Namespace) -> int:
+    # Lazy imports!
+    import kash.exec  # noqa: F401  # pyright: ignore
+    from kash.config.logger import get_log_settings
+    from kash.config.setup import kash_setup
+    from kash.workspaces import get_ws, switch_to_ws
 
     # Have kash use textpress workspace.
     ws_root = Path(args.work_dir).resolve()
@@ -139,20 +120,17 @@ def main() -> None:
         # As a convenience also allow dashes in the subcommand name.
         subcommand = args.subcommand.replace("-", "_")
 
-        # Handle simple commands.
-        if subcommand == "format_md":
-            reformat_md(args.input_path, args.output)
-            return
-
-        # Handle kash actions.
+        # Handle each command.
         try:
-            input = prepare_action_input(args.input_path)
-            if subcommand == docx_to_md.__name__:
-                docx_to_md(input.items[0])
+            input_path = Path(args.input_path)
+            if subcommand == reformat_md.__name__:
+                reformat_md(input_path, args.output)
+            elif subcommand == docx_to_md.__name__:
+                docx_to_md(input_path)
             elif subcommand == render_as_html.__name__:
-                render_as_html(input)
+                render_as_html(input_path)
             elif subcommand == format_gemini_report.__name__:
-                format_gemini_report(input.items[0])
+                format_gemini_report(input_path)
             else:
                 raise ValueError(f"Unknown subcommand: {args.subcommand}")
 
@@ -161,7 +139,16 @@ def main() -> None:
             log.info("Error details", exc_info=e)
             log_file = get_log_settings().log_file_path
             rprint(f"[bright_black]See logs for more details: {fmt_path(log_file)}[/bright_black]")
-            sys.exit(1)
+            return 1
+
+    return 0
+
+
+def main() -> None:
+    parser = build_parser()
+    args = parser.parse_args()
+
+    sys.exit(run_command(args))
 
 
 if __name__ == "__main__":
