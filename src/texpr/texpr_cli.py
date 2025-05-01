@@ -16,22 +16,20 @@ from kash.actions.core.render_as_html import render_as_html
 from kash.config.logger import get_log_settings
 from kash.config.setup import kash_setup
 from kash.exec import prepare_action_input
-from kash.kits.media.actions.text.docx_to_md import docx_to_md
-from kash.kits.media.actions.text.endnotes_to_footnotes import endnotes_to_footnotes
-from kash.shell import shell_main
+from kash.kits.docs.actions.text.docx_to_md import docx_to_md
+from kash.kits.docs.actions.text.endnotes_to_footnotes import endnotes_to_footnotes
+from kash.kits.docs.actions.text.format_gemini_report import format_gemini_report
 from kash.shell.utils.argparse_utils import WrappedColorFormatter
 from kash.workspaces import get_ws
 from kash.workspaces.workspaces import switch_to_ws
 from prettyfmt import fmt_path
 from rich import print as rprint
 
-from texpr.format_gemini_report import format_gemini_report
-
 log = logging.getLogger(__name__)
 
 APP_NAME = "texpr"
 
-DESCRIPTION = """Textpress: A simpler way to publish complex ideas"""
+DESCRIPTION = """Textpress: Simple publishing for complex ideas"""
 
 DEFAULT_WORK_ROOT = Path("./textpress")
 
@@ -82,11 +80,6 @@ def build_parser() -> argparse.ArgumentParser:
         )
         subparser.add_argument("input_path", type=str, help="Path to the input file")
 
-    subparser = subparsers.add_parser(
-        "kash",
-        help="Launch the kash shell (a full command line environment with various tools loaded).",
-    )
-
     return parser
 
 
@@ -100,11 +93,6 @@ def main() -> None:
 
     # Set up kash workspace root.
     kash_setup(rich_logging=True, kash_ws_root=ws_root)
-
-    # Option to run the kash shell with media tools loaded.
-    if args.subcommand == "kash":
-        rprint("[bright_black]Running kash shell with media tools loaded...[/bright_black]")
-        sys.exit(shell_main.run_shell())
 
     # Get the workspace.
     ws = get_ws(ws_path)

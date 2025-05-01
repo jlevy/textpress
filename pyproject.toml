@@ -7,7 +7,7 @@ Repository = "https://github.com/jlevy/texpr"
 
 [project]
 name = "texpr"
-description = "Textpress: A simpler way to publish complex ideas"
+description = "Textpress: Simple publishing for complex ideas"
 authors = [
     { name="Joshua Levy", email="joshua@cal.berkeley.edu" },
 ]
@@ -39,8 +39,7 @@ classifiers = [
 
 dependencies = [
     "flowmark>=0.4.1",
-    "kash-media>=0.3.10",
-    "litellm==1.67.4.post1",
+    "kash-docs>=0.1.0",
     "rich>=14.0.0",
 ]
 
@@ -63,9 +62,9 @@ texpr = "texpr.texpr_cli:main"
 
 [tool.uv.sources]
 # For bleeding edge:
-# kash-media = { git = "https://github.com/jlevy/kash-media.git" }
+# kash-docs = { git = "https://github.com/jlevy/kash-docs.git" }
 # For local development:
-# kash-media = { path = "../kash-media", editable = true }
+# kash-docs = { path = "../kash-docs", editable = true }
 
 
 # ---- Build system ----
