@@ -10,7 +10,7 @@ def publish(paths: list[Path]) -> None:
     """
     Publishes a list of files to Textpress.
     """
-    from texpr.texpr_api import publish_files
+    from texpr.textpress_api import publish_files
 
     try:
         manifest = publish_files(paths)
