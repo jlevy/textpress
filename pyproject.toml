@@ -62,7 +62,7 @@ texpr = "texpr.texpr_cli:main"
 
 [tool.uv.sources]
 # For bleeding edge:
-# kash-docs = { git = "https://github.com/jlevy/kash-docs.git" }
+kash-docs = { git = "https://github.com/jlevy/kash-docs.git" }
 # For local development:
 # kash-docs = { path = "../kash-docs", editable = true }
 

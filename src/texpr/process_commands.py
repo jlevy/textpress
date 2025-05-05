@@ -1,6 +1,10 @@
+import logging
 from pathlib import Path
 
 from flowmark import reformat_file
+
+log = logging.getLogger(__name__)
+
 
 # We wrap each command as a convenient way to customize docs and to make
 # all imports lazy, since some of these actions have a lot of dependencies.

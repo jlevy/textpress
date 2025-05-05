@@ -15,12 +15,13 @@ from kash.shell.utils.argparse_utils import WrappedColorFormatter
 from prettyfmt import fmt_path
 from rich import print as rprint
 
-from .commands import (
+from texpr.process_commands import (
     docx_to_md,
     format_gemini_report,
     reformat_md,
     render_as_html,
 )
+from texpr.publish_commands import publish
 
 log = logging.getLogger(__name__)
 
@@ -79,6 +80,7 @@ def build_parser() -> argparse.ArgumentParser:
         docx_to_md,
         format_gemini_report,
         render_as_html,
+        publish,
     ]:
         subparser = subparsers.add_parser(
             func.__name__,
@@ -91,13 +93,14 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def run_command(args: argparse.Namespace) -> int:
-    # Lazy imports!
+def run_process_command(subcommand: str, args: argparse.Namespace) -> int:
+    # Lazy imports! Can be slow so only do for processing commands.
     import kash.exec  # noqa: F401  # pyright: ignore
     from kash.config.logger import get_log_settings
     from kash.config.setup import kash_setup
     from kash.workspaces import get_ws, switch_to_ws
 
+    # Now kash/workspace commands.
     # Have kash use textpress workspace.
     ws_root = Path(args.work_dir).resolve()
     ws_path = ws_root / "workspace"
@@ -116,9 +119,6 @@ def run_command(args: argparse.Namespace) -> int:
     # Run actions in the context of this workspace.
     with ws:
         log.info("Running action: %s", args.subcommand)
-
-        # As a convenience also allow dashes in the subcommand name.
-        subcommand = args.subcommand.replace("-", "_")
 
         # Handle each command.
         try:
@@ -144,11 +144,24 @@ def run_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_publish_command(subcommand: str, args: argparse.Namespace) -> int:
+    if subcommand == publish.__name__:
+        publish([Path(args.input_path)])
+
+    return 0
+
+
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
-    sys.exit(run_command(args))
+    # As a convenience also allow dashes in the subcommand name.
+    subcommand = args.subcommand.replace("-", "_")
+
+    if subcommand == publish.__name__:
+        sys.exit(run_publish_command(subcommand, args))
+    else:
+        sys.exit(run_process_command(subcommand, args))
 
 
 if __name__ == "__main__":
