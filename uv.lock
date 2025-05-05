@@ -1130,8 +1130,8 @@ wheels = [
 
 [[package]]
 name = "kash-docs"
-version = "0.1.1.dev3+4aecbf7"
-source = { git = "https://github.com/jlevy/kash-docs.git#4aecbf72132b85fff863a1545f3b9b478f30f36b" }
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "boto3" },
     { name = "cachetools" },
@@ -1149,6 +1149,10 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "weasyprint" },
     { name = "wikipedia-api" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2e/cf/10ecdde2f7a1d1fe59e5c1d516c3f13f679b6df611cce2e8c122b8ee0469/kash_docs-0.1.1.tar.gz", hash = "sha256:29fcd882b76a52bcdbd25268dec25116990fd352e0d1168f89db3dc83886059e", size = 214948, upload-time = "2025-05-05T00:39:42.834Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2b/13/38a5a23efdec1779d2b23522be2b47235ab2588cecc3a3fe4af76a3abe54/kash_docs-0.1.1-py3-none-any.whl", hash = "sha256:942a131a28714614d3b617e4ec31393b46253cebc808b89c8888534dfe2d87c7", size = 61893, upload-time = "2025-05-05T00:39:41.209Z" },
 ]
 
 [[package]]
@@ -2786,7 +2790,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "flowmark", specifier = ">=0.4.3" },
-    { name = "kash-docs", git = "https://github.com/jlevy/kash-docs.git" },
+    { name = "kash-docs", specifier = ">=0.1.1" },
     { name = "rich", specifier = ">=14.0.0" },
 ]
 
