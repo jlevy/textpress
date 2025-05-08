@@ -1,12 +1,10 @@
 import logging
 from pathlib import Path
 
-from flowmark import reformat_file
-
 log = logging.getLogger(__name__)
 
 
-# We wrap each command as a convenient way to customize docs and to make
+# We wrap each command as a convenient way to customize CLI docs and to make
 # all imports lazy, since some of these actions have a lot of dependencies.
 
 
@@ -21,6 +19,8 @@ def reformat_md(
     Auto-format a markdown file. Uses flowmark to do readable line wrapping and
     Markdown-aware cleanups.
     """
+    from flowmark import reformat_file
+
     inplace = output is None
     reformat_file(
         md_path, output, inplace=inplace, width=width, semantic=semantic, nobackup=nobackup
@@ -70,3 +70,22 @@ def format_gemini_report(md_path: Path) -> None:
 
     input = prepare_action_input(md_path)
     format_gemini_report(input.items[0])
+
+
+def publish(paths: list[Path]) -> None:
+    """
+    Publishes a list of files to Textpress.
+    """
+    import httpx
+
+    from texpr.textpress_api import publish_files
+
+    try:
+        manifest = publish_files(paths)
+        files = manifest.files.keys()
+        log.warning("Published %d files: %s", len(files), ", ".join(files))
+    except (httpx.HTTPStatusError, ValueError, FileNotFoundError) as e:
+        # Catch specific, expected errors.
+        log.exception("Publishing failed: %s", e)
+    except Exception as e:
+        log.exception("An unexpected error occurred during publishing: %s", e)

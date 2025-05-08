@@ -15,13 +15,13 @@ from kash.shell.utils.argparse_utils import WrappedColorFormatter
 from prettyfmt import fmt_path
 from rich import print as rprint
 
-from texpr.process_commands import (
+from texpr.cli_commands import (
     docx_to_md,
     format_gemini_report,
+    publish,
     reformat_md,
     render_as_html,
 )
-from texpr.publish_commands import publish
 
 log = logging.getLogger(__name__)
 
@@ -30,6 +30,15 @@ APP_NAME = "texpr"
 DESCRIPTION = """Textpress: Simple publishing for complex ideas"""
 
 DEFAULT_WORK_ROOT = Path("./textpress")
+
+
+COMMANDS = [
+    "reformat_md",
+    "docx_to_md",
+    "render_as_html",
+    "format_gemini_report",
+    "publish",
+]
 
 
 def get_app_version() -> str:
@@ -93,7 +102,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def run_process_command(subcommand: str, args: argparse.Namespace) -> int:
+def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     # Lazy imports! Can be slow so only do for processing commands.
     import kash.exec  # noqa: F401  # pyright: ignore
     from kash.config.logger import get_log_settings
@@ -144,11 +153,12 @@ def run_process_command(subcommand: str, args: argparse.Namespace) -> int:
     return 0
 
 
-def run_publish_command(subcommand: str, args: argparse.Namespace) -> int:
+def run_command(subcommand: str, args: argparse.Namespace) -> int:
     if subcommand == publish.__name__:
         publish([Path(args.input_path)])
-
-    return 0
+        return 0
+    else:
+        return run_workspace_command(subcommand, args)
 
 
 def main() -> None:
@@ -158,10 +168,7 @@ def main() -> None:
     # As a convenience also allow dashes in the subcommand name.
     subcommand = args.subcommand.replace("-", "_")
 
-    if subcommand == publish.__name__:
-        sys.exit(run_publish_command(subcommand, args))
-    else:
-        sys.exit(run_process_command(subcommand, args))
+    sys.exit(run_command(subcommand, args))
 
 
 if __name__ == "__main__":

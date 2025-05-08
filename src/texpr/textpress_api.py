@@ -8,7 +8,7 @@ from kash.utils.file_utils.file_formats_model import Format, detect_file_format
 from pydantic import BaseModel, Field
 from strif import hash_file
 
-from texpr.textpresds_env import get_api_key, get_api_root
+from texpr.textpress_env import get_api_key, get_api_root
 
 log = logging.getLogger(__name__)
 
