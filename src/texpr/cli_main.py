@@ -16,11 +16,10 @@ from prettyfmt import fmt_path
 from rich import print as rprint
 
 from texpr.cli_commands import (
-    docx_to_md,
-    format_gemini_report,
+    convert_to_md,
     publish,
     reformat_md,
-    render_as_html,
+    render_webpage,
 )
 
 log = logging.getLogger(__name__)
@@ -86,9 +85,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     for func in [
-        docx_to_md,
-        format_gemini_report,
-        render_as_html,
+        convert_to_md,
+        render_webpage,
         publish,
     ]:
         subparser = subparsers.add_parser(
@@ -134,12 +132,12 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
             input_path = Path(args.input_path)
             if subcommand == reformat_md.__name__:
                 reformat_md(input_path, args.output)
-            elif subcommand == docx_to_md.__name__:
-                docx_to_md(input_path)
-            elif subcommand == render_as_html.__name__:
-                render_as_html(input_path)
-            elif subcommand == format_gemini_report.__name__:
-                format_gemini_report(input_path)
+            elif subcommand == convert_to_md.__name__:
+                convert_to_md(input_path)
+            elif subcommand == render_webpage.__name__:
+                render_webpage(input_path)
+            elif subcommand == publish.__name__:
+                publish(Path(args.input_path))
             else:
                 raise ValueError(f"Unknown subcommand: {args.subcommand}")
 
@@ -153,14 +151,6 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     return 0
 
 
-def run_command(subcommand: str, args: argparse.Namespace) -> int:
-    if subcommand == publish.__name__:
-        publish([Path(args.input_path)])
-        return 0
-    else:
-        return run_workspace_command(subcommand, args)
-
-
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
@@ -168,7 +158,7 @@ def main() -> None:
     # As a convenience also allow dashes in the subcommand name.
     subcommand = args.subcommand.replace("-", "_")
 
-    sys.exit(run_command(subcommand, args))
+    sys.exit(run_workspace_command(subcommand, args))
 
 
 if __name__ == "__main__":

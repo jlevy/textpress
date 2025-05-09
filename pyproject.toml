@@ -39,7 +39,7 @@ classifiers = [
 
 dependencies = [
     "flowmark>=0.4.3",
-    "kash-docs>=0.1.1",
+    "kash-docs>=0.1.2",
     "rich>=14.0.0",
 ]
 

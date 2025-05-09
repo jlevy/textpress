@@ -1,0 +1,85 @@
+{% extends "simple_webpage.html.jinja" %}
+
+{% block head_extra %}
+  <style>
+    .textpress-logo {
+      font-family: "PT Serif", serif;
+      font-size: 1.6rem;
+      display: flex;
+      letter-spacing: -0.01em;
+    }
+    .logo-black {
+      color: #000000;
+    }
+    .logo-grey {
+      color: #A5A8A6;
+    }
+    .textpress-page-header {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      background-color: var(--color-bg-alt);
+      border-bottom: 1px solid var(--color-border-hint);
+      transition: color 0.2s ease-in-out;
+    }
+    .textpress-main-nav {
+      color: var(--color-hint);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-size: var(--font-size-small);
+    }
+    .textpress-main-nav a {
+      color: var(--color-text-hint);
+    }
+    .textpress-main-nav a:hover {
+      text-decoration: none;
+      color: var(--color-primary-light);
+    }
+    /* Ensure logo link doesn't change color or get underlined on hover */
+    .textpress-logo:hover {
+      text-decoration: none;
+    }
+    .textpress-page-footer {
+      font-family: var(--font-sans);
+      color: var(--color-text-hint);
+      font-size: var(--font-size-small);
+    }
+  </style>
+{% endblock head_extra %}
+
+{% block body_header %}
+  {# Align header with body, add shadow, and set up flex layout for logo and nav #}
+  <header class="textpress-page-header container max-w-3xl mx-auto bg-white px-6 md:px-16 py-3 md:shadow-lg flex justify-between items-baseline">
+    <a href="/" class="textpress-logo">
+      <div class="flex">
+        <span class="logo-black">T</span>
+        <span class="logo-black">E</span>
+        <span class="logo-black">X</span>
+        <span class="logo-grey">T</span>
+        <span class="logo-black">P</span>
+        <span class="logo-black">R</span>
+        <span class="logo-grey">E</span>
+        <span class="logo-grey">S</span>
+        <span class="logo-grey">S</span>
+      </div>
+    </a>
+    {# Nav takes remaining space, "About" link floats to the right #}
+    <nav class="textpress-main-nav flex items-center flex-grow ml-8">
+      <a href="/about" class="ml-auto">About</a>
+    </nav>
+  </header>
+{% endblock body_header %}
+
+{% block main_content %}
+  <div class="textpress-article-container">
+    {{ super() }}
+  </div>
+{% endblock main_content %}
+
+
+{% block body_footer %}
+  {# Align footer with body content #}
+  <footer class="textpress-page-footer container max-w-3xl mx-auto px-6 md:px-16 py-6">
+    <p>Published on <a href="https://texpr.com">Textpress</a></p>
+  </footer>
+{% endblock body_footer %}
+
