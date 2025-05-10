@@ -12,7 +12,6 @@ from pathlib import Path
 from textwrap import dedent
 from typing import Literal
 
-from kash.exec import runtime_settings
 from kash.shell.utils.argparse_utils import WrappedColorFormatter
 from prettyfmt import fmt_path
 from rich import print as rprint
@@ -65,11 +64,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="work directory to use for workspace, logs, and cache",
     )
     parser.add_argument(
-        "--rerun", action="store_true", help="rerun actions even if the outputs already exist"
+        "--rerun",
+        action="store_true",
+        help="rerun actions even if the outputs already exist in the workspace",
     )
-    parser.add_argument("--debug", action="store_true", help="enable debug logging")
-    parser.add_argument("--verbose", action="store_true", help="enable verbose logging")
-    parser.add_argument("--quiet", action="store_true", help="only log errors")
+    parser.add_argument(
+        "--debug", action="store_true", help="enable debug logging (log level: debug)"
+    )
+    parser.add_argument(
+        "--verbose", action="store_true", help="enable verbose logging (log level: info)"
+    )
+    parser.add_argument("--quiet", action="store_true", help="only log errors (log level: error)")
 
     # Parsers for each command.
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
@@ -118,9 +123,9 @@ def get_log_level(args: argparse.Namespace) -> Literal["debug", "info", "warning
 
 def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     # Lazy imports! Can be slow so only do for processing commands.
-    import kash.exec  # noqa: F401  # pyright: ignore
     from kash.config.logger import get_log_settings
     from kash.config.setup import kash_setup
+    from kash.exec import kash_runtime
 
     # Now kash/workspace commands.
     # Have kash use textpress workspace.
@@ -132,9 +137,9 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     kash_setup(rich_logging=True, kash_ws_root=ws_root, console_log_level=log_level)
 
     # Run actions in the context of this workspace.
-    with runtime_settings(ws_path, rerun=True) as settings:
+    with kash_runtime(ws_path, rerun=args.rerun) as runtime:
         # Show the user the workspace info.
-        settings.workspace.log_workspace_info()
+        runtime.workspace.log_workspace_info()
 
         # Handle each command.
         log.info("Running subcommand: %s", args.subcommand)
