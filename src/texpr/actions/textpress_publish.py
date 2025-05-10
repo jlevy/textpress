@@ -8,7 +8,7 @@ from kash.exec.preconditions import (
 )
 from kash.model import ONE_OR_MORE_ARGS, Format, Item, ItemType, Param
 
-from texpr.actions.textpress_render_webpage import textpress_render_webpage
+from texpr.actions.textpress_format import textpress_format
 from texpr.textpress_api import publish_files
 
 log = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ def textpress_publish(item: Item, add_title: bool = False) -> Item:
     Publish a document as a Textpress webpage. Converts from docx, Markdown, or
     HTML, renders, minifies, and publishes the result.
     """
-    rendered_item = textpress_render_webpage(item, add_title=add_title)
+    rendered_item = textpress_format(item, add_title=add_title)
 
     manifest = publish_files([rendered_item.absolute_path()])
     files = manifest.files.keys()

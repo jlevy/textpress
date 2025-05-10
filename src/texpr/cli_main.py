@@ -10,16 +10,18 @@ import sys
 from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
+from typing import Literal
 
+from kash.exec import runtime_settings
 from kash.shell.utils.argparse_utils import WrappedColorFormatter
 from prettyfmt import fmt_path
 from rich import print as rprint
 
 from texpr.cli_commands import (
     convert_to_md,
+    format,
     publish,
     reformat_md,
-    render_webpage,
 )
 
 log = logging.getLogger(__name__)
@@ -65,6 +67,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--rerun", action="store_true", help="rerun actions even if the outputs already exist"
     )
+    parser.add_argument("--debug", action="store_true", help="enable debug logging")
+    parser.add_argument("--verbose", action="store_true", help="enable verbose logging")
+    parser.add_argument("--quiet", action="store_true", help="only log errors")
 
     # Parsers for each command.
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
@@ -86,7 +91,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     for func in [
         convert_to_md,
-        render_webpage,
+        format,
         publish,
     ]:
         subparser = subparsers.add_parser(
@@ -100,12 +105,22 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def get_log_level(args: argparse.Namespace) -> Literal["debug", "info", "warning", "error"]:
+    if args.quiet:
+        return "error"
+    elif args.verbose:
+        return "info"
+    elif args.debug:
+        return "debug"
+    else:
+        return "warning"
+
+
 def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     # Lazy imports! Can be slow so only do for processing commands.
     import kash.exec  # noqa: F401  # pyright: ignore
     from kash.config.logger import get_log_settings
     from kash.config.setup import kash_setup
-    from kash.workspaces import get_ws, switch_to_ws
 
     # Now kash/workspace commands.
     # Have kash use textpress workspace.
@@ -113,29 +128,24 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     ws_path = ws_root / "workspace"
 
     # Set up kash workspace root.
-    kash_setup(rich_logging=True, kash_ws_root=ws_root)
-
-    # Get the workspace.
-    ws = get_ws(ws_path)
-    log.warning("Switching to workspace: %s", ws.base_dir)
-    switch_to_ws(ws.base_dir)
-
-    # Show the user the workspace info.
-    ws.log_workspace_info()
+    log_level = get_log_level(args)
+    kash_setup(rich_logging=True, kash_ws_root=ws_root, console_log_level=log_level)
 
     # Run actions in the context of this workspace.
-    with ws:
-        log.info("Running action: %s", args.subcommand)
+    with runtime_settings(ws_path, rerun=True) as settings:
+        # Show the user the workspace info.
+        settings.workspace.log_workspace_info()
 
         # Handle each command.
+        log.info("Running subcommand: %s", args.subcommand)
         try:
             input_path = Path(args.input_path)
             if subcommand == reformat_md.__name__:
                 reformat_md(input_path, args.output)
             elif subcommand == convert_to_md.__name__:
                 convert_to_md(input_path)
-            elif subcommand == render_webpage.__name__:
-                render_webpage(input_path)
+            elif subcommand == format.__name__:
+                format(input_path)
             elif subcommand == publish.__name__:
                 publish(Path(args.input_path))
             else:

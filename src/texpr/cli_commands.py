@@ -12,8 +12,7 @@ def convert_to_md(md_path: Path) -> None:
     """
     Convert a docx file to clean Markdown, hopefully in good enough shape
     to publish. Uses MarkItDown/Mammoth/Markdownify and a few additional
-    cleanups.
-
+    cleanups and flowmark clean Markdown formatting.
     This works well to convert docx files from Gemini Deep Research
     output: click to export a report to Google Docs, then select `File >
     Download > Microsoft Word (.docx)`.
@@ -26,22 +25,24 @@ def convert_to_md(md_path: Path) -> None:
     textpress_convert_to_md(input.items[0])
 
 
-def render_webpage(md_path: Path) -> None:
+def format(md_path: Path) -> None:
     """
-    Convert text, Markdown, or HTML to pretty, formatted HTML using the kash default
-    page template.
+    Convert and format text, Markdown, or an HTML fragment to pretty, formatted,
+    minified HTML using the TextPress template. Supports GFM-flavored Markdown
+    tables and footnotes.
     """
     from kash.exec import prepare_action_input
 
-    from texpr.actions.textpress_render_webpage import textpress_render_webpage
+    from texpr.actions.textpress_format import textpress_format
 
     input = prepare_action_input(md_path)
-    textpress_render_webpage(input.items[0])
+    textpress_format(input.items[0])
 
 
 def publish(path: Path) -> None:
     """
-    Publish a file to Textpress. Converts to markdown and HTML if necessary.
+    Publish a document as a Textpress webpage. Converts from docx, Markdown, or
+    HTML, renders, minifies, and publishes the result.
     """
     from kash.exec import prepare_action_input
 
