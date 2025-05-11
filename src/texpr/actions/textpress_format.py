@@ -7,7 +7,7 @@ from kash.exec.preconditions import (
     is_html,
 )
 from kash.kits.docs.actions.text.minify_html import minify_html
-from kash.model import ONE_OR_MORE_ARGS, Item, Param
+from kash.model import ONE_OR_MORE_ARGS, Format, Item, ItemType, Param
 from kash.utils.errors import InvalidInput
 
 from texpr.actions.textpress_convert import textpress_convert
@@ -35,4 +35,11 @@ def textpress_format(item: Item, add_title: bool = False) -> Item:
 
     minified_item = minify_html(html_item)
 
-    return minified_item
+    # Put the final formatted result as an export with the same title as the original.
+    result_item = Item(
+        type=ItemType.export, format=Format.html, title=item.abbrev_title(), body=minified_item.body
+    )
+
+    log.message("Formatted item: %s", result_item)
+
+    return result_item
