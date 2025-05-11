@@ -5,14 +5,13 @@ More information: https://github.com/jlevy/texpr
 """
 
 import argparse
-import logging
 import sys
 from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
 from typing import Literal
 
-from kash.shell.utils.argparse_utils import WrappedColorFormatter
+from clideps.utils.readable_argparse import ReadableColorFormatter
 from prettyfmt import fmt_path
 from rich import print as rprint
 
@@ -22,8 +21,6 @@ from texpr.cli_commands import (
     publish,
     reformat_md,
 )
-
-log = logging.getLogger(__name__)
 
 APP_NAME = "texpr"
 
@@ -50,7 +47,7 @@ def get_app_version() -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        formatter_class=WrappedColorFormatter,
+        formatter_class=ReadableColorFormatter,
         epilog=dedent((__doc__ or "") + "\n\n" + f"{APP_NAME} {get_app_version()}"),
         description=DESCRIPTION,
     )
@@ -83,7 +80,7 @@ def build_parser() -> argparse.ArgumentParser:
         "reformat_md",
         help=reformat_md.__doc__,
         description=reformat_md.__doc__,
-        formatter_class=WrappedColorFormatter,
+        formatter_class=ReadableColorFormatter,
     )
     subparser.add_argument("input_path", type=str, help="Input file (use '-' for stdin)")
     subparser.add_argument(
@@ -103,7 +100,7 @@ def build_parser() -> argparse.ArgumentParser:
             func.__name__,
             help=func.__doc__,
             description=func.__doc__,
-            formatter_class=WrappedColorFormatter,
+            formatter_class=ReadableColorFormatter,
         )
         subparser.add_argument("input_path", type=str, help="Path to the input file")
 
@@ -123,9 +120,11 @@ def get_log_level(args: argparse.Namespace) -> Literal["debug", "info", "warning
 
 def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     # Lazy imports! Can be slow so only do for processing commands.
-    from kash.config.logger import get_log_settings
+    from kash.config.logger import CustomLogger, get_log_settings, get_logger
     from kash.config.setup import kash_setup
     from kash.exec import kash_runtime
+
+    log: CustomLogger = get_logger(__name__)
 
     # Now kash/workspace commands.
     # Have kash use textpress workspace.
