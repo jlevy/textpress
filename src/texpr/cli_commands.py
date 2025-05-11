@@ -4,28 +4,32 @@ from pathlib import Path
 # all imports lazy, since some of these actions have a lot of dependencies.
 
 
-def convert_to_md(md_path: Path) -> None:
+def convert(md_path: Path) -> None:
     """
-    Convert a docx file to clean Markdown, hopefully in good enough shape
-    to publish. Uses MarkItDown/Mammoth/Markdownify and a few additional
-    cleanups and flowmark clean Markdown formatting.
-    This works well to convert docx files from Gemini Deep Research
+    Convert a document to clean Markdown.
+
+    This works well to convert docx files, especially Gemini Deep Research
     output: click to export a report to Google Docs, then select `File >
     Download > Microsoft Word (.docx)`.
+
+    Uses MarkItDown/Mammoth/Markdownify and a few additional cleanups to
+    convert docx files and flowmark for clean Markdown formatting.
     """
     from kash.exec import prepare_action_input
 
-    from texpr.actions.textpress_convert_to_md import textpress_convert_to_md
+    from texpr.actions.textpress_convert import textpress_convert
 
     input = prepare_action_input(md_path)
-    textpress_convert_to_md(input.items[0])
+    textpress_convert(input.items[0])
 
 
 def format(md_path: Path) -> None:
     """
     Convert and format text, Markdown, or an HTML fragment to pretty, formatted,
-    minified HTML using the TextPress template. Supports GFM-flavored Markdown
-    tables and footnotes.
+    minified HTML using the TextPress template.
+
+    Supports GFM-flavored Markdown tables and footnotes. Uses `convert` to convert
+    docx files.
     """
     from kash.exec import prepare_action_input
 
@@ -37,8 +41,8 @@ def format(md_path: Path) -> None:
 
 def publish(path: Path) -> None:
     """
-    Publish a document as a Textpress webpage. Converts from docx, Markdown, or
-    HTML, renders, minifies, and publishes the result.
+    Publish (or re-publish) a document as a Textpress webpage. Uses `format`
+    to convert and format the content and publishes the result.
     """
     from kash.exec import prepare_action_input
 
@@ -46,22 +50,3 @@ def publish(path: Path) -> None:
 
     input = prepare_action_input(path)
     textpress_publish(input.items[0])
-
-
-def reformat_md(
-    md_path: Path,
-    output: Path | None,
-    width: int = 88,
-    semantic: bool = True,
-    nobackup: bool = False,
-) -> None:
-    """
-    Auto-format a markdown file. Uses flowmark to do readable line wrapping and
-    Markdown-aware cleanups.
-    """
-    from flowmark import reformat_file
-
-    inplace = output is None
-    reformat_file(
-        md_path, output, inplace=inplace, width=width, semantic=semantic, nobackup=nobackup
-    )

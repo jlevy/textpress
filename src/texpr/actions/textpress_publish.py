@@ -21,10 +21,6 @@ log = get_logger(__name__)
     cacheable=False,
 )
 def textpress_publish(item: Item, add_title: bool = False) -> Item:
-    """
-    Publish a document as a Textpress webpage. Converts from docx, Markdown, or
-    HTML, renders, minifies, and publishes the result.
-    """
     formatted_item = textpress_format(item, add_title=add_title)
 
     # Put the final result as an export with the same title as the original.

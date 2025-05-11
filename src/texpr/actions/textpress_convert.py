@@ -6,15 +6,7 @@ from kash.model import Item
 
 
 @kash_action(precondition=is_docx_resource)
-def textpress_convert_to_md(item: Item) -> Item:
-    """
-    Convert a docx file to clean Markdown, hopefully in good enough shape
-    to publish. Uses MarkItDown/Mammoth/Markdownify and a few additional
-    cleanups and flowmark clean Markdown formatting.
-    This works well to convert docx files from Gemini Deep Research
-    output: click to export a report to Google Docs, then select `File >
-    Download > Microsoft Word (.docx)`.
-    """
+def textpress_convert(item: Item) -> Item:
     # First do basic conversion to markdown.
     md_item = docx_to_md(item)
 

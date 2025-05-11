@@ -10,7 +10,7 @@ from kash.kits.docs.actions.text.minify_html import minify_html
 from kash.model import ONE_OR_MORE_ARGS, Item, Param
 from kash.utils.errors import InvalidInput
 
-from texpr.actions.textpress_convert_to_md import textpress_convert_to_md
+from texpr.actions.textpress_convert import textpress_convert
 from texpr.actions.textpress_render_template import textpress_render_template
 
 log = get_logger(__name__)
@@ -22,17 +22,11 @@ log = get_logger(__name__)
     params=(Param("add_title", "Add a title to the page body.", type=bool),),
 )
 def textpress_format(item: Item, add_title: bool = False) -> Item:
-    """
-    Convert and format text, Markdown, or an HTML fragment to pretty, formatted,
-    minified HTML using the TextPress template. Supports GFM-flavored Markdown
-    tables and footnotes.
-    """
-
     if is_html(item) or has_text_body(item):
         doc_item = item
     elif is_docx_resource(item):
         log.warning("Converting docx to Markdown...")
-        doc_item = textpress_convert_to_md(item)
+        doc_item = textpress_convert(item)
     else:
         # TODO: Add PDF support.
         raise InvalidInput(f"Don't know how to convert item to HTML: {item.type}")

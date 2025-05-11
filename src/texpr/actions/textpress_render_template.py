@@ -15,10 +15,6 @@ from texpr.render_webpage import render_webpage
     params=(Param("add_title", "Add a title to the page body.", type=bool),),
 )
 def textpress_render_template(item: Item, add_title: bool = False) -> Item:
-    """
-    Render a plaintext content to full-page formatted HTML using the TextPress template.
-    """
-
     html_body = render_webpage(item, add_title_h1=add_title)
     html_item = item.derived_copy(format=Format.html, body=html_body)
 

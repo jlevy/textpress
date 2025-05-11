@@ -16,10 +16,9 @@ from prettyfmt import fmt_path
 from rich import print as rprint
 
 from texpr.cli_commands import (
-    convert_to_md,
+    convert,
     format,
     publish,
-    reformat_md,
 )
 
 APP_NAME = "texpr"
@@ -27,15 +26,6 @@ APP_NAME = "texpr"
 DESCRIPTION = """Textpress: Simple publishing for complex ideas"""
 
 DEFAULT_WORK_ROOT = Path("./textpress")
-
-
-COMMANDS = [
-    "reformat_md",
-    "docx_to_md",
-    "render_as_html",
-    "format_gemini_report",
-    "publish",
-]
 
 
 def get_app_version() -> str:
@@ -76,23 +66,8 @@ def build_parser() -> argparse.ArgumentParser:
     # Parsers for each command.
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
 
-    subparser = subparsers.add_parser(
-        "reformat_md",
-        help=reformat_md.__doc__,
-        description=reformat_md.__doc__,
-        formatter_class=ReadableColorFormatter,
-    )
-    subparser.add_argument("input_path", type=str, help="Input file (use '-' for stdin)")
-    subparser.add_argument(
-        "-o",
-        "--output",
-        type=str,
-        default="-",
-        help="Output file (use '-' for stdout)",
-    )
-
     for func in [
-        convert_to_md,
+        convert,
         format,
         publish,
     ]:
@@ -144,10 +119,8 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
         log.info("Running subcommand: %s", args.subcommand)
         try:
             input_path = Path(args.input_path)
-            if subcommand == reformat_md.__name__:
-                reformat_md(input_path, args.output)
-            elif subcommand == convert_to_md.__name__:
-                convert_to_md(input_path)
+            if subcommand == convert.__name__:
+                convert(input_path)
             elif subcommand == format.__name__:
                 format(input_path)
             elif subcommand == publish.__name__:
