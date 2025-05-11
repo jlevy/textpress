@@ -4,7 +4,7 @@ from kash.exec.preconditions import (
     has_text_body,
     is_html,
 )
-from kash.model import ONE_OR_MORE_ARGS, Format, Item, ItemType, Param
+from kash.model import ONE_OR_MORE_ARGS, Format, Item, Param
 
 from texpr.render_webpage import render_webpage
 
@@ -20,6 +20,6 @@ def textpress_render_template(item: Item, add_title: bool = False) -> Item:
     """
 
     html_body = render_webpage(item, add_title_h1=add_title)
-    html_item = item.derived_copy(type=ItemType.export, format=Format.html, body=html_body)
+    html_item = item.derived_copy(format=Format.html, body=html_body)
 
     return html_item

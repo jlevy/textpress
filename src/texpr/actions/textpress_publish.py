@@ -1,5 +1,4 @@
-import logging
-
+from kash.config.logger import get_logger
 from kash.exec import kash_action
 from kash.exec.preconditions import (
     has_text_body,
@@ -7,11 +6,12 @@ from kash.exec.preconditions import (
     is_html,
 )
 from kash.model import ONE_OR_MORE_ARGS, Format, Item, ItemType, Param
+from kash.workspaces import current_ws
 
 from texpr.actions.textpress_format import textpress_format
 from texpr.textpress_api import publish_files
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 @kash_action(
@@ -25,11 +25,23 @@ def textpress_publish(item: Item, add_title: bool = False) -> Item:
     Publish a document as a Textpress webpage. Converts from docx, Markdown, or
     HTML, renders, minifies, and publishes the result.
     """
-    rendered_item = textpress_format(item, add_title=add_title)
+    formatted_item = textpress_format(item, add_title=add_title)
 
-    manifest = publish_files([rendered_item.absolute_path()])
+    # Put the final result as an export with the same title as the original.
+    result_item = Item(
+        type=ItemType.export,
+        format=Format.html,
+        title=item.abbrev_title(),  # Pull title from original item.
+        body=formatted_item.body,
+    )
+
+    current_ws().save(result_item)
+
+    log.message("Item is ready to publish: %s", result_item)
+
+    manifest = publish_files([result_item.absolute_path()])
+
     files = manifest.files.keys()
-    log.warning("Published: %s", files)
+    log.message("Published: %s", files)
 
-    result_item = rendered_item.derived_copy(type=ItemType.export, format=Format.html)
     return result_item

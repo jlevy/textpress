@@ -1,5 +1,4 @@
-import logging
-
+from kash.config.logger import get_logger
 from kash.exec import kash_action
 from kash.exec.preconditions import (
     has_full_html_page_body,
@@ -14,7 +13,7 @@ from kash.utils.errors import InvalidInput
 from texpr.actions.textpress_convert_to_md import textpress_convert_to_md
 from texpr.actions.textpress_render_template import textpress_render_template
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 @kash_action(
@@ -39,6 +38,7 @@ def textpress_format(item: Item, add_title: bool = False) -> Item:
         raise InvalidInput(f"Don't know how to convert item to HTML: {item.type}")
 
     html_item = textpress_render_template(doc_item, add_title=add_title)
+
     minified_item = minify_html(html_item)
 
     return minified_item

@@ -68,7 +68,6 @@ kash-shell = { git = "https://github.com/jlevy/kash.git" }
 # # For local development:
 # kash-docs = { path = "../kash-docs", editable = true }
 # kash-shell = { path = "../kash", editable = true }
-# clideps = { path = "../clideps", editable = true }
 
 # ---- Build system ----
 
