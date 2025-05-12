@@ -41,7 +41,7 @@ dependencies = [
     "flowmark>=0.4.3",
     "kash-docs>=0.1.2",
     "rich>=14.0.0",
-    "clideps>=0.1.3"
+    "clideps>=0.1.4"
 ]
 
 

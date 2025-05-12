@@ -6,12 +6,14 @@ More information: https://github.com/jlevy/texpr
 
 import argparse
 import sys
+import webbrowser
 from importlib.metadata import version
 from pathlib import Path
 from textwrap import dedent
 from typing import Literal
 
 from clideps.utils.readable_argparse import ReadableColorFormatter
+from kash.utils.common.url import Url
 from prettyfmt import fmt_path
 from rich import print as rprint
 
@@ -20,6 +22,7 @@ from texpr.cli_commands import (
     format,
     publish,
 )
+from texpr.textpress_env import Env
 
 APP_NAME = "texpr"
 
@@ -93,11 +96,31 @@ def get_log_level(args: argparse.Namespace) -> Literal["debug", "info", "warning
         return "warning"
 
 
+def display_output(ws_path: Path, store_paths: list[Path], published_urls: list[Url]) -> None:
+    rprint()
+    rprint()
+    rprint("[bold green]Success![/bold green]")
+    rprint(f"[bright_black]Processed files in the workspace: {fmt_path(ws_path)}[/bright_black]")
+    rprint("[bright_black]Results is now at:[/bright_black]")
+    rprint()
+    if store_paths:
+        rprint("[bright_black]Files saved to workspace:[/bright_black]")
+        for path in store_paths:
+            rprint(f"[bold cyan]{fmt_path(ws_path / path)}[/bold cyan]")
+    if store_paths and published_urls:
+        rprint()
+    if published_urls:
+        rprint("[bright_black]Published URLs:[/bright_black]")
+        for url in published_urls:
+            rprint(f"[bold blue]{url}[/bold blue]")
+
+
 def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     # Lazy imports! Can be slow so only do for processing commands.
     from kash.config.logger import CustomLogger, get_log_settings, get_logger
     from kash.config.setup import kash_setup
     from kash.exec import kash_runtime
+    from kash.model import Item
 
     log: CustomLogger = get_logger(__name__)
 
@@ -107,8 +130,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     ws_path = ws_root / "workspace"
 
     # Set up kash workspace root.
-    log_level = get_log_level(args)
-    kash_setup(rich_logging=True, kash_ws_root=ws_root, console_log_level=log_level)
+    kash_setup(rich_logging=True, kash_ws_root=ws_root, console_log_level=get_log_level(args))
 
     # Run actions in the context of this workspace.
     with kash_runtime(ws_path, rerun=args.rerun) as runtime:
@@ -117,16 +139,34 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
 
         # Handle each command.
         log.info("Running subcommand: %s", args.subcommand)
+        published_urls: list[Url] = []
         try:
             input_path = Path(args.input_path)
+            output_item: Item
             if subcommand == convert.__name__:
-                convert(input_path)
+                output_item = convert(input_path)
             elif subcommand == format.__name__:
-                format(input_path)
+                output_item = format(input_path)
             elif subcommand == publish.__name__:
-                publish(Path(args.input_path))
+                output_item = publish(Path(args.input_path))
+
+                publish_root = Env.TEXTPRESS_PUBLISH_ROOT.read_str(default="https://texpr.com")
+                username = Env.TEXTPRESS_USERNAME.read_str(default=None)
+                assert output_item.store_path
+                filename = Path(output_item.store_path).name
+                if username:
+                    published_url = Url(f"{publish_root}/{username}/d/{filename}")
+                else:
+                    published_url = Url(f"{publish_root}/d/{filename}")
+                published_urls.append(published_url)
+
+                if publish_root and username:
+                    webbrowser.open(published_url)
             else:
                 raise ValueError(f"Unknown subcommand: {args.subcommand}")
+
+            assert output_item.store_path
+            display_output(ws_path, [Path(output_item.store_path)], published_urls)
 
         except Exception as e:
             log.error("Error running action: %s: %s", subcommand, e)

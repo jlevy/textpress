@@ -1,15 +1,20 @@
-import os
+from clideps.env_vars.env_enum import EnvEnum
 
 
-def get_api_root() -> str:
-    api_root = os.getenv("TEXTPRESS_API_ROOT")
-    if not api_root:
-        raise ValueError("TEXTPRESS_API_ROOT environment variable not set.")
-    return api_root
+class Env(EnvEnum):
+    """
+    Environment variable settings for Textpress.
+    """
 
+    TEXTPRESS_API_ROOT = "TEXTPRESS_API_ROOT"
+    """The root directory for Textpress API."""
 
-def get_api_key() -> str:
-    api_key = os.getenv("TEXTPRESS_API_KEY")
-    if not api_key:
-        raise ValueError("TEXTPRESS_API_KEY environment variable not set.")
-    return api_key
+    TEXTPRESS_API_KEY = "TEXTPRESS_API_KEY"
+    """The API key for Textpress."""
+
+    # TODO: These should probably be gotten from the API.
+    TEXTPRESS_PUBLISH_ROOT = "TEXTPRESS_PUBLISH_ROOT"
+    """The root directory for Textpress publish."""
+
+    TEXTPRESS_USERNAME = "TEXTPRESS_USERNAME"
+    """The username for Textpress."""

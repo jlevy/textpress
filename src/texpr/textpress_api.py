@@ -8,7 +8,7 @@ from kash.utils.file_utils.file_formats_model import Format, detect_file_format
 from pydantic import BaseModel, Field
 from strif import hash_file
 
-from texpr.textpress_env import get_api_key, get_api_root
+from texpr.textpress_env import Env
 
 log = logging.getLogger(__name__)
 
@@ -201,8 +201,8 @@ def publish_files(
     """
     Publishes files (uploads and deletes) to Textpress.
     """
-    api_root = get_api_root()
-    api_key = get_api_key()
+    api_root = Env.TEXTPRESS_API_ROOT.read_str()
+    api_key = Env.TEXTPRESS_API_KEY.read_str()
     if delete_paths is None:
         delete_paths = []
 

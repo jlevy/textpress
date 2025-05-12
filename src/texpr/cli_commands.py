@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 # We wrap each command as a convenient way to customize CLI docs and to make
 # all imports lazy, since some of these actions have a lot of dependencies.
+if TYPE_CHECKING:
+    from kash.model import Item
 
 
-def convert(md_path: Path) -> None:
+def convert(md_path: Path) -> Item:
     """
     Convert a document to clean Markdown.
 
@@ -20,10 +25,10 @@ def convert(md_path: Path) -> None:
     from texpr.actions.textpress_convert import textpress_convert
 
     input = prepare_action_input(md_path)
-    textpress_convert(input.items[0])
+    return textpress_convert(input.items[0])
 
 
-def format(md_path: Path) -> None:
+def format(md_path: Path) -> Item:
     """
     Convert and format text, Markdown, or an HTML fragment to pretty, formatted,
     minified HTML using the TextPress template.
@@ -36,10 +41,10 @@ def format(md_path: Path) -> None:
     from texpr.actions.textpress_format import textpress_format
 
     input = prepare_action_input(md_path)
-    textpress_format(input.items[0])
+    return textpress_format(input.items[0])
 
 
-def publish(path: Path) -> None:
+def publish(path: Path) -> Item:
     """
     Publish (or re-publish) a document as a Textpress webpage. Uses `format`
     to convert and format the content and publishes the result.
@@ -49,4 +54,4 @@ def publish(path: Path) -> None:
     from texpr.actions.textpress_publish import textpress_publish
 
     input = prepare_action_input(path)
-    textpress_publish(input.items[0])
+    return textpress_publish(input.items[0])

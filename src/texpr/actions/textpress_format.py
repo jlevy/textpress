@@ -25,7 +25,7 @@ def textpress_format(item: Item, add_title: bool = False) -> Item:
     if is_html(item) or has_text_body(item):
         doc_item = item
     elif is_docx_resource(item):
-        log.warning("Converting docx to Markdown...")
+        log.message("Converting docx to Markdown...")
         doc_item = textpress_convert(item)
     else:
         # TODO: Add PDF support.
