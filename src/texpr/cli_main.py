@@ -47,6 +47,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=f"{APP_NAME} {get_app_version()}")
 
     # Common arguments for all actions.
+
     parser.add_argument(
         "--work_dir",
         type=str,
@@ -81,6 +82,12 @@ def build_parser() -> argparse.ArgumentParser:
             formatter_class=ReadableColorFormatter,
         )
         subparser.add_argument("input_path", type=str, help="Path to the input file")
+        if func in {format, publish}:
+            subparser.add_argument(
+                "--open",
+                action="store_true",
+                help="after it is complete, open the result in your web browser",
+            )
 
     return parser
 
@@ -96,20 +103,39 @@ def get_log_level(args: argparse.Namespace) -> Literal["debug", "info", "warning
         return "warning"
 
 
+_placehoder_username = "<your_username>"
+
+
+def public_url_for(path: Path) -> Url:
+    publish_root = Env.TEXTPRESS_PUBLISH_ROOT.read_str(default="https://texpr.com")
+    username = Env.TEXTPRESS_USERNAME.read_str(default=_placehoder_username)
+    filename = path.name
+    return Url(f"{publish_root}/{username}/d/{filename}")
+
+
+def local_url_for(path: Path) -> Url:
+    return Url(f"file://{path.resolve()}")
+
+
+def open_url(url: Url) -> None:
+    print(f"Opening browser: {url}")
+    webbrowser.open(url)
+
+
 def display_output(ws_path: Path, store_paths: list[Path], published_urls: list[Url]) -> None:
     rprint()
     rprint()
     rprint("[bold green]Success![/bold green]")
     rprint(f"[bright_black]Processed files in the workspace: {fmt_path(ws_path)}[/bright_black]")
-    rprint("[bright_black]Results is now at:[/bright_black]")
-    rprint()
+
     if store_paths:
-        rprint("[bright_black]Files saved to workspace:[/bright_black]")
+        rprint()
+        rprint("[bright_black]Results are now at:[/bright_black]")
         for path in store_paths:
             rprint(f"[bold cyan]{fmt_path(ws_path / path)}[/bold cyan]")
-    if store_paths and published_urls:
-        rprint()
+
     if published_urls:
+        rprint()
         rprint("[bright_black]Published URLs:[/bright_black]")
         for url in published_urls:
             rprint(f"[bold blue]{url}[/bold blue]")
@@ -145,27 +171,27 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
             output_item: Item
             if subcommand == convert.__name__:
                 output_item = convert(input_path)
+                assert output_item.store_path
             elif subcommand == format.__name__:
                 output_item = format(input_path)
+                assert output_item.store_path
+
+                local_url = local_url_for(ws_path / Path(output_item.store_path))
+                if args.open:
+                    open_url(local_url)
             elif subcommand == publish.__name__:
                 output_item = publish(Path(args.input_path))
-
-                publish_root = Env.TEXTPRESS_PUBLISH_ROOT.read_str(default="https://texpr.com")
-                username = Env.TEXTPRESS_USERNAME.read_str(default=None)
                 assert output_item.store_path
-                filename = Path(output_item.store_path).name
-                if username:
-                    published_url = Url(f"{publish_root}/{username}/d/{filename}")
-                else:
-                    published_url = Url(f"{publish_root}/d/{filename}")
-                published_urls.append(published_url)
 
-                if publish_root and username:
-                    webbrowser.open(published_url)
+                filename = Path(output_item.store_path).name
+                url = public_url_for(ws_path / filename)
+                published_urls.append(url)
+
+                if args.open and _placehoder_username not in url:
+                    webbrowser.open(url)
             else:
                 raise ValueError(f"Unknown subcommand: {args.subcommand}")
 
-            assert output_item.store_path
             display_output(ws_path, [Path(output_item.store_path)], published_urls)
 
         except Exception as e:

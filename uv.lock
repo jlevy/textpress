@@ -1146,8 +1146,8 @@ wheels = [
 
 [[package]]
 name = "kash-docs"
-version = "0.1.3.dev3+a52d25d"
-source = { git = "https://github.com/jlevy/kash-docs.git#a52d25da33670836a7f4e6a42aeee5a9302f0c3f" }
+version = "0.1.3.dev4+4158a2a"
+source = { git = "https://github.com/jlevy/kash-docs.git#4158a2ade3b385ebde5b6eb1c11e026fa0e0f96a" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "boto3" },
@@ -1236,7 +1236,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/b3/15/c9f68c4f477fbaa9f
 
 [[package]]
 name = "litellm"
-version = "1.69.0"
+version = "1.69.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -1251,9 +1251,9 @@ dependencies = [
     { name = "tiktoken" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f1/55/8d27d9c39fc092174ea274a1e5f7e237078b0959f3b9d70448d598551f97/litellm-1.69.0.tar.gz", hash = "sha256:9f37f5fedef87fa13ebfe89a8c9c484d609ffcbd6b82f2d1bb6e1f78761be335", size = 7365657, upload-time = "2025-05-11T01:04:57.313Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e2/d2/8e51fcf48e4a339778df0587fd66fc954909c2733abfbde19d870a0fc5ae/litellm-1.69.1.tar.gz", hash = "sha256:96886aec050b93c76da7d45b3d633c287cfedf18de046542c3c681c386f56136", size = 7381127, upload-time = "2025-05-12T23:13:41.817Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/8e/7a3812586581304e0aa5e8555bf21f00c6b576fe98ce17ed42d66caa2c47/litellm-1.69.0-py3-none-any.whl", hash = "sha256:7fe2745dfd991bee377922b53e25f8cc7a68fc89e3c5dbbdc1d0bacb942b5d78", size = 7722378, upload-time = "2025-05-11T01:04:53.941Z" },
+    { url = "https://files.pythonhosted.org/packages/78/ce/2016bd46dc3d73d138a6ae2893277d2778100c21012688c0bdc7488e445b/litellm-1.69.1-py3-none-any.whl", hash = "sha256:43eb76d16d2c19881856740491adc43474b4a1e7cd405e65edc42e5c8ccfb65d", size = 7727494, upload-time = "2025-05-12T23:13:38.424Z" },
 ]
 
 [[package]]
