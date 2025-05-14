@@ -1,16 +1,17 @@
-import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import httpx
+from kash.config.logger import get_logger
 from kash.utils.file_utils.file_formats_model import Format, detect_file_format
+from prettyfmt import fmt_lines
 from pydantic import BaseModel, Field
 from strif import hash_file
 
 from texpr.textpress_env import Env
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 
 log_api = log.debug
@@ -205,6 +206,8 @@ def publish_files(
     api_key = Env.TEXTPRESS_API_KEY.read_str()
     if delete_paths is None:
         delete_paths = []
+
+    log.message("Publishing files:\n%s", fmt_lines(upload_paths))
 
     with httpx.Client(timeout=CLIENT_TIMEOUT) as client:
         manifest: ManifestResponse = get_manifest(client, api_root, api_key)

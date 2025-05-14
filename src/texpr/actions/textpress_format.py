@@ -2,13 +2,22 @@ from kash.config.logger import get_logger
 from kash.exec import kash_action
 from kash.exec.preconditions import (
     has_full_html_page_body,
-    has_text_body,
+    has_simple_text_body,
     is_docx_resource,
     is_html,
 )
 from kash.kits.docs.actions.text.minify_html import minify_html
-from kash.model import ONE_OR_MORE_ARGS, Format, Item, ItemType, Param
+from kash.model import (
+    ONE_ARG,
+    TWO_ARGS,
+    ActionInput,
+    ActionResult,
+    Format,
+    ItemType,
+    Param,
+)
 from kash.utils.errors import InvalidInput
+from prettyfmt import fmt_lines
 
 from texpr.actions.textpress_convert import textpress_convert
 from texpr.actions.textpress_render_template import textpress_render_template
@@ -17,29 +26,34 @@ log = get_logger(__name__)
 
 
 @kash_action(
-    expected_args=ONE_OR_MORE_ARGS,
-    precondition=(is_docx_resource | is_html | has_text_body) & ~has_full_html_page_body,
+    expected_args=ONE_ARG,
+    expected_outputs=TWO_ARGS,
+    precondition=(is_docx_resource | is_html | has_simple_text_body) & ~has_full_html_page_body,
     params=(Param("add_title", "Add a title to the page body.", type=bool),),
 )
-def textpress_format(item: Item, add_title: bool = False) -> Item:
-    if is_html(item) or has_text_body(item):
-        doc_item = item
+def textpress_format(input: ActionInput, add_title: bool = False) -> ActionResult:
+    item = input.items[0]
+    if is_html(item) or has_simple_text_body(item):
+        raw_text_item = item
     elif is_docx_resource(item):
         log.message("Converting docx to Markdown...")
-        doc_item = textpress_convert(item)
+        raw_text_item = textpress_convert(input).items[0]
     else:
         # TODO: Add PDF support.
         raise InvalidInput(f"Don't know how to convert item to HTML: {item.type}")
 
-    html_item = textpress_render_template(doc_item, add_title=add_title)
+    # Export the text item with original title.
+    text_item = raw_text_item.derived_copy(type=ItemType.export, title=item.abbrev_title())
 
-    minified_item = minify_html(html_item)
+    raw_html_item = textpress_render_template(raw_text_item, add_title=add_title)
+
+    minified_item = minify_html(raw_html_item)
 
     # Put the final formatted result as an export with the same title as the original.
-    result_item = Item(
+    html_item = raw_html_item.derived_copy(
         type=ItemType.export, format=Format.html, title=item.abbrev_title(), body=minified_item.body
     )
 
-    log.message("Formatted item: %s", result_item)
+    log.message("Formatted HTML item from text item:\n%s", fmt_lines([raw_text_item, html_item]))
 
-    return result_item
+    return ActionResult(items=[text_item, html_item])

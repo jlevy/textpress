@@ -1,11 +1,20 @@
 from kash.config.logger import get_logger
 from kash.exec import kash_action
 from kash.exec.preconditions import (
-    has_text_body,
+    has_html_body,
+    has_simple_text_body,
     is_docx_resource,
-    is_html,
 )
-from kash.model import ONE_OR_MORE_ARGS, Format, Item, ItemType, Param
+from kash.exec_model.args_model import TWO_ARGS
+from kash.model import (
+    ONE_ARG,
+    ActionInput,
+    ActionResult,
+    Format,
+    Item,
+    ItemType,
+    Param,
+)
 from kash.workspaces import current_ws
 from prettyfmt import fmt_path
 
@@ -16,19 +25,23 @@ log = get_logger(__name__)
 
 
 @kash_action(
-    expected_args=ONE_OR_MORE_ARGS,
-    precondition=is_docx_resource | is_html | has_text_body,
+    expected_args=ONE_ARG,
+    expected_outputs=TWO_ARGS,
+    precondition=is_docx_resource | has_html_body | has_simple_text_body,
     params=(Param("add_title", "Add the document title to the page body.", type=bool),),
     cacheable=False,
 )
-def textpress_publish(item: Item, add_title: bool = False) -> Item:
-    formatted_item = textpress_format(item, add_title=add_title)
+def textpress_publish(input: ActionInput, add_title: bool = False) -> ActionResult:
+    item = input.items[0]
+    format_result = textpress_format(input, add_title=add_title)
+    md_item = next(item for item in format_result.items if item.format and item.format.is_markdown)
+    html_item = next(item for item in format_result.items if item.format == Format.html)
 
-    manifest = publish_files([formatted_item.absolute_path()])
+    manifest = publish_files([md_item.absolute_path(), html_item.absolute_path()])
 
     log.message("Published: %s", list(manifest.files.keys()))
 
-    # Save the manifest but return the actual document.
+    # Save the manifest so we have it but don't include it in the output.
     manifest_item = Item(
         type=ItemType.config,
         format=Format.json,
@@ -38,4 +51,4 @@ def textpress_publish(item: Item, add_title: bool = False) -> Item:
     manifest_path = current_ws().save(manifest_item)
     log.message("Manifest saved: %s", fmt_path(manifest_path))
 
-    return formatted_item
+    return ActionResult(items=[md_item, html_item])

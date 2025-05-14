@@ -18,6 +18,8 @@ from prettyfmt import fmt_path
 from rich import print as rprint
 
 from texpr.cli_commands import (
+    clipboard_copy,
+    clipboard_paste,
     convert,
     format,
     publish,
@@ -26,7 +28,7 @@ from texpr.textpress_env import Env
 
 APP_NAME = "texpr"
 
-DESCRIPTION = """Textpress: Simple publishing for complex ideas"""
+DESCRIPTION = """Textpress: Simple publishing for complex docs"""
 
 DEFAULT_WORK_ROOT = Path("./textpress")
 
@@ -71,6 +73,8 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
 
     for func in [
+        clipboard_copy,
+        clipboard_paste,
         convert,
         format,
         publish,
@@ -81,7 +85,16 @@ def build_parser() -> argparse.ArgumentParser:
             description=func.__doc__,
             formatter_class=ReadableColorFormatter,
         )
-        subparser.add_argument("input_path", type=str, help="Path to the input file")
+        if func in {clipboard_copy, convert, format, publish}:
+            subparser.add_argument("input_path", type=str, help="Path to the input file")
+        if func in {clipboard_paste}:
+            subparser.add_argument(
+                "output_path",
+                type=str,
+                nargs="?",
+                default="untitled.md",
+                help="Path to the destination file (defaults to untitled.md)",
+            )
         if func in {format, publish}:
             subparser.add_argument(
                 "--open",
@@ -140,13 +153,15 @@ def display_output(ws_path: Path, store_paths: list[Path], published_urls: list[
         for url in published_urls:
             rprint(f"[bold blue]{url}[/bold blue]")
 
+    rprint()
+
 
 def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     # Lazy imports! Can be slow so only do for processing commands.
     from kash.config.logger import CustomLogger, get_log_settings, get_logger
     from kash.config.setup import kash_setup
     from kash.exec import kash_runtime
-    from kash.model import Item
+    from kash.model import ActionResult, Format
 
     log: CustomLogger = get_logger(__name__)
 
@@ -165,34 +180,59 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
 
         # Handle each command.
         log.info("Running subcommand: %s", args.subcommand)
+        store_paths: list[Path] = []
         published_urls: list[Url] = []
         try:
-            input_path = Path(args.input_path)
-            output_item: Item
-            if subcommand == convert.__name__:
-                output_item = convert(input_path)
-                assert output_item.store_path
-            elif subcommand == format.__name__:
-                output_item = format(input_path)
-                assert output_item.store_path
-
-                local_url = local_url_for(ws_path / Path(output_item.store_path))
-                if args.open:
-                    open_url(local_url)
-            elif subcommand == publish.__name__:
-                output_item = publish(Path(args.input_path))
-                assert output_item.store_path
-
-                filename = Path(output_item.store_path).name
-                url = public_url_for(ws_path / filename)
-                published_urls.append(url)
-
-                if args.open and _placehoder_username not in url:
-                    webbrowser.open(url)
+            result: ActionResult
+            if subcommand == clipboard_copy.__name__:
+                clipboard_copy(Path(args.input_path))
+            elif subcommand == clipboard_paste.__name__:
+                output_path = Path(args.output_path)
+                # If output_path has no directory portion work in the workspace.
+                if output_path.parent == Path():
+                    clipboard_paste(dest_path=ws_path / output_path)
+                    store_paths.append(output_path)
+                else:
+                    clipboard_paste(dest_path=output_path.resolve())
+                    store_paths.append(output_path.resolve())
             else:
-                raise ValueError(f"Unknown subcommand: {args.subcommand}")
+                # Commands with a single input path and store path outputs.
+                input_path: Path = Path(args.input_path)
+                if subcommand == convert.__name__:
+                    result = convert(input_path)
+                    assert result.items[0].store_path
+                    store_paths.append(Path(result.items[0].store_path))
+                elif subcommand == format.__name__:
+                    result = format(input_path)
 
-            display_output(ws_path, [Path(output_item.store_path)], published_urls)
+                    md_item = next(item for item in result.items if item.format == Format.markdown)
+                    html_item = next(item for item in result.items if item.format == Format.html)
+                    assert md_item.store_path and html_item.store_path
+
+                    store_paths.extend([Path(md_item.store_path), Path(html_item.store_path)])
+
+                    local_url = local_url_for(path=ws_path / Path(html_item.store_path).name)
+                    if args.open:
+                        open_url(local_url)
+                elif subcommand == publish.__name__:
+                    result = publish(Path(args.input_path))
+
+                    md_item = next(item for item in result.items if item.format == Format.markdown)
+                    html_item = next(item for item in result.items if item.format == Format.html)
+                    assert md_item.store_path and html_item.store_path
+
+                    md_url = public_url_for(ws_path / Path(md_item.store_path).name)
+                    html_url = public_url_for(ws_path / Path(html_item.store_path).name)
+
+                    store_paths.extend([Path(md_item.store_path), Path(html_item.store_path)])
+                    published_urls.extend([md_url, html_url])
+                    if args.open and _placehoder_username not in html_url:
+                        webbrowser.open(html_url)
+                else:
+                    raise ValueError(f"Unknown subcommand: {args.subcommand}")
+
+            if store_paths or published_urls:
+                display_output(ws_path, store_paths, published_urls)
 
         except Exception as e:
             log.error("Error running action: %s: %s", subcommand, e)
