@@ -1117,8 +1117,8 @@ wheels = [
 
 [[package]]
 name = "kash-docs"
-version = "0.1.3.dev8+552f6d7"
-source = { git = "https://github.com/jlevy/kash-docs.git#552f6d7be9ac7000a39f80cf12521ed90ac70dda" }
+version = "0.1.3"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "boto3" },
@@ -1140,11 +1140,15 @@ dependencies = [
     { name = "weasyprint" },
     { name = "wikipedia-api" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/54/c4/c1f142943adbd1607804546ad4800fc2d17e36b0f130cb186bb01bf755ae/kash_docs-0.1.3.tar.gz", hash = "sha256:dc61a1262905b16f66eb9fac655e558305d4427e7ce5b66894f1c1c78afe4af8", size = 237148, upload-time = "2025-05-14T04:03:39.849Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/79/04/5a958e318cf879d6f7297faab9d1921d0cc2771545e8cc9854e4025b8671/kash_docs-0.1.3-py3-none-any.whl", hash = "sha256:81094ead4cf5be1050b0c59fa1d8a6c9fb6e024b5bf0771becf627bb59090237", size = 65203, upload-time = "2025-05-14T04:03:38.282Z" },
+]
 
 [[package]]
 name = "kash-shell"
-version = "0.3.12.dev24+4b41eb0"
-source = { git = "https://github.com/jlevy/kash.git#4b41eb0ec8aa9303aa173d6ae7f3207991a5e487" }
+version = "0.3.12"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
     { name = "audioop-lts", marker = "python_full_version >= '3.13'" },
@@ -1197,6 +1201,10 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "uvicorn" },
     { name = "xonsh" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/71/0b/0ff5a37c95f66e3f0c98dc74f73591285f0ab4f09d4ea9a97d381816b9f8/kash_shell-0.3.12.tar.gz", hash = "sha256:cf98f64cab7cb185c752531e0cf4c5aca95621255e3a32f258c3235651e6ee9a", size = 520078, upload-time = "2025-05-14T04:02:50.511Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/27/22/8a01ccdb3f1f0a381399b558d3d34eceb383d31d6f064d961df68fe96e56/kash_shell-0.3.12-py3-none-any.whl", hash = "sha256:f55558c332194ae2af35473553773b8d431201dab916014d737d27dc417a786a", size = 478283, upload-time = "2025-05-14T04:02:48.188Z" },
 ]
 
 [[package]]
@@ -2797,7 +2805,7 @@ dev = [
 requires-dist = [
     { name = "clideps", specifier = ">=0.1.4" },
     { name = "flowmark", specifier = ">=0.4.3" },
-    { name = "kash-docs", git = "https://github.com/jlevy/kash-docs.git" },
+    { name = "kash-docs", specifier = ">=0.1.3" },
     { name = "rich", specifier = ">=14.0.0" },
 ]
 
