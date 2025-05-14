@@ -42,16 +42,20 @@ def textpress_format(input: ActionInput, add_title: bool = False) -> ActionResul
         # TODO: Add PDF support.
         raise InvalidInput(f"Don't know how to convert item to HTML: {item.type}")
 
-    # Export the text item with original title.
-    text_item = raw_text_item.derived_copy(type=ItemType.export, title=item.abbrev_title())
+    # Export the text item with original title or the heading if we can get it from the body.
+    title = item.title or raw_text_item.body_heading()
+    text_item = raw_text_item.derived_copy(type=ItemType.export, title=title)
 
-    raw_html_item = textpress_render_template(raw_text_item, add_title=add_title)
+    raw_html_item = textpress_render_template(text_item, add_title=add_title)
 
     minified_item = minify_html(raw_html_item)
 
     # Put the final formatted result as an export with the same title as the original.
     html_item = raw_html_item.derived_copy(
-        type=ItemType.export, format=Format.html, title=item.abbrev_title(), body=minified_item.body
+        type=ItemType.export,
+        format=Format.html,
+        title=title,
+        body=minified_item.body,
     )
 
     log.message("Formatted HTML item from text item:\n%s", fmt_lines([raw_text_item, html_item]))
