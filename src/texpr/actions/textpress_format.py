@@ -60,4 +60,6 @@ def textpress_format(input: ActionInput, add_title: bool = False) -> ActionResul
 
     log.message("Formatted HTML item from text item:\n%s", fmt_lines([raw_text_item, html_item]))
 
-    return ActionResult(items=[text_item, html_item])
+    # Setting overwrite means we'll always pick the same output paths and
+    # both .html and .md filenames will match.
+    return ActionResult(items=[text_item, html_item], overwrite=True)

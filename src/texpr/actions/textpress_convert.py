@@ -10,6 +10,8 @@ from kash.kits.docs.actions.text.endnotes_to_footnotes import endnotes_to_footno
 from kash.model import ActionInput, ActionResult
 from kash.utils.errors import InvalidInput
 
+from texpr.doc_cleanups import gemini_cleanups
+
 
 @kash_action(
     precondition=(is_docx_resource | is_html | has_simple_text_body) & ~has_full_html_page_body
@@ -21,6 +23,8 @@ def textpress_convert(input: ActionInput) -> ActionResult:
     elif is_docx_resource(item):
         # First do basic conversion to markdown.
         md_item = docx_to_md(item)
+        assert md_item.body
+        md_item.body = gemini_cleanups(md_item.body)
 
         # Gemini reports use superscripts with a long list of numeric references.
         # This converts them to proper footnotes. Should be safe for any doc.
