@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 def clipboard_copy(source_path: Path) -> None:
     """
-    Copy contents of a file to the OS (system) clipboard. Useful to copy
+    Copy contents of a file to the OS (system) clipboard. Use to copy
     results from Textpress and paste elsewhere.
     """
     from kash.commands.base.basic_file_commands import clipboard_copy
@@ -21,7 +21,7 @@ def clipboard_copy(source_path: Path) -> None:
 
 def clipboard_paste(dest_path: Path) -> None:
     """
-    Paste contents of the OS (system) clipboard into a file. Useful to copy
+    Paste contents of the OS (system) clipboard into a file. Use to copy
     content from elsewhere and paste into a file for use by Textpress.
     """
     from kash.commands.base.basic_file_commands import clipboard_paste

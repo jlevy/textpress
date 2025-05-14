@@ -40,22 +40,8 @@ def get_app_version() -> str:
         return "unknown"
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        formatter_class=ReadableColorFormatter,
-        epilog=dedent((__doc__ or "") + "\n\n" + f"{APP_NAME} {get_app_version()}"),
-        description=DESCRIPTION,
-    )
-    parser.add_argument("--version", action="version", version=f"{APP_NAME} {get_app_version()}")
-
-    # Common arguments for all actions.
-
-    parser.add_argument(
-        "--work_dir",
-        type=str,
-        default=DEFAULT_WORK_ROOT,
-        help="work directory to use for workspace, logs, and cache",
-    )
+def add_general_flags(parser: argparse.ArgumentParser) -> None:
+    """Add common flags to a parser."""
     parser.add_argument(
         "--rerun",
         action="store_true",
@@ -68,6 +54,25 @@ def build_parser() -> argparse.ArgumentParser:
         "--verbose", action="store_true", help="enable verbose logging (log level: info)"
     )
     parser.add_argument("--quiet", action="store_true", help="only log errors (log level: error)")
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        formatter_class=ReadableColorFormatter,
+        epilog=dedent((__doc__ or "") + "\n\n" + f"{APP_NAME} {get_app_version()}"),
+        description=DESCRIPTION,
+    )
+    parser.add_argument("--version", action="version", version=f"{APP_NAME} {get_app_version()}")
+
+    # Common arguments for all actions.
+    parser.add_argument(
+        "--work_dir",
+        type=str,
+        default=DEFAULT_WORK_ROOT,
+        help="work directory to use for workspace, logs, and cache",
+    )
+    # Add general flags to main parser
+    add_general_flags(parser)
 
     # Parsers for each command.
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
@@ -85,6 +90,8 @@ def build_parser() -> argparse.ArgumentParser:
             description=func.__doc__,
             formatter_class=ReadableColorFormatter,
         )
+        if func in {convert, format, publish}:
+            add_general_flags(subparser)
         if func in {clipboard_copy, convert, format, publish}:
             subparser.add_argument("input_path", type=str, help="Path to the input file")
         if func in {clipboard_paste}:
@@ -211,7 +218,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
 
                     store_paths.extend([Path(md_item.store_path), Path(html_item.store_path)])
 
-                    local_url = local_url_for(path=ws_path / Path(html_item.store_path).name)
+                    local_url = local_url_for(path=ws_path / Path(html_item.store_path))
                     if args.open:
                         open_url(local_url)
                 elif subcommand == publish.__name__:
