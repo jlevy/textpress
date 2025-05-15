@@ -4,9 +4,9 @@
   <style>
     .textpress-logo {
       font-family: "PT Serif", serif;
-      font-size: 1.6rem;
+      font-size: 1.3rem;
       display: flex;
-      letter-spacing: -0.01em;
+      letter-spacing: 0.03em;
     }
     .logo-black {
       color: #000000;
@@ -22,7 +22,7 @@
       transition: color 0.2s ease-in-out;
     }
     .textpress-main-nav {
-      color: var(--color-hint);
+      color: hsl(140, 2%, 65%);
       text-transform: uppercase;
       letter-spacing: 0.03em;
       font-size: var(--font-size-small);
@@ -43,35 +43,26 @@
       color: var(--color-text-hint);
       font-size: var(--font-size-small);
     }
-    .long-text .site-page {
-      font-family: var(--font-sans);
+    .boxed-text {
+      border: 1px solid hsl(140, 2%, 34%);
+      padding: 0.2rem 1.2rem;
+      border-radius: 4px;
+      margin: 2rem 0;
     }
-    .long-text .site-page h1 {
-      font-family: var(--font-sans);
-      margin-top: 1rem;
+    .boxed-text h1, .boxed-text h2, .boxed-text h3 {
+      text-align: center;
     }
-    .long-text .site-page h2 {
-      font-family: var(--font-sans);
-      margin-top: 1rem;
-      font-size: 1.1rem;
-      font-style: normal;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
+    .get-started {
+      background-color: hsl(140, 2%, 95%);
     }
-    .long-text .site-page h3 {
-      font-family: var(--font-sans);
-      font-size: 1rem;
-      font-weight: 700;
-      text-transform: none;
-    }
+
   </style>
 {% endblock head_extra %}
 
 {% block body_header %}
   {# Align header with body, add shadow, and set up flex layout for logo and nav #}
-  <header class="textpress-page-header container max-w-3xl mx-auto px-6 md:px-16 py-3 md:shadow-lg flex justify-between items-baseline">
-    <a href="/textpress/d/home.html" class="textpress-logo">
+  <header class="textpress-page-header container max-w-3xl mx-auto px-6 md:px-16 py-2 md:shadow-lg flex justify-between items-baseline">
+    <a href="https://texpr.com/textpress/d/home.html" class="textpress-logo">
       <div class="flex">
         <span class="logo-black">T</span>
         <span class="logo-black">E</span>
@@ -86,7 +77,10 @@
     </a>
     {# Nav takes remaining space, "About" link floats to the right #}
     <nav class="textpress-main-nav flex items-center flex-grow ml-8">
-      <a href="/textpress/d/about.html" class="ml-auto">About</a>
+      <div class="ml-auto flex">
+        <a href="https://texpr.com/textpress/d/home.html#get-started" class="mr-4">Try It</a>
+        <a href="https://github.com/jlevy/texpr">GitHub</a>
+      </div>
     </nav>
   </header>
 {% endblock body_header %}
@@ -101,7 +95,13 @@
 {% block body_footer %}
   {# Align footer with body content #}
   <footer class="textpress-page-footer container max-w-3xl mx-auto px-6 md:px-16 py-6 text-center">
-    <p>Published on <a href="https://texpr.com/textpress/d/home.html">Textpress</a></p>
+    <p>
+      Published on <a href="https://texpr.com/textpress/d/home.html">Textpress</a>
+      <br/>
+      <a href="https://texpr.com/textpress/d/privacy.html">Privacy</a>
+      &nbsp;•&nbsp;
+      <a href="https://texpr.com/textpress/d/tos.html">Terms of Service</a>
+    </p>
   </footer>
 {% endblock body_footer %}
 
