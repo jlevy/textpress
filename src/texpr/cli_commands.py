@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from kash.utils.common.url import Url
+
 # We wrap each command as a convenient way to customize CLI docs and to make
 # all imports lazy, since some of these actions have a lot of dependencies.
 if TYPE_CHECKING:
@@ -29,7 +31,7 @@ def clipboard_paste(dest_path: Path) -> None:
     clipboard_paste(dest_path)
 
 
-def convert(md_path: Path) -> ActionResult:
+def convert(md_path: Path | Url) -> ActionResult:
     """
     Convert a document to clean Markdown.
 
@@ -48,7 +50,7 @@ def convert(md_path: Path) -> ActionResult:
     return textpress_convert(input)
 
 
-def format(md_path: Path, add_classes: str | None = None) -> ActionResult:
+def format(md_path: Path | Url, add_classes: str | None = None) -> ActionResult:
     """
     Convert and format text, Markdown, or an HTML fragment to pretty, formatted,
     minified HTML using the TextPress template. Result contains clean Markdown
@@ -65,7 +67,7 @@ def format(md_path: Path, add_classes: str | None = None) -> ActionResult:
     return textpress_format(input, add_classes=add_classes)
 
 
-def publish(path: Path, add_classes: str | None = None) -> ActionResult:
+def publish(path: Path | Url, add_classes: str | None = None) -> ActionResult:
     """
     Publish (or re-publish) a document as a Textpress webpage. Uses `format`
     to convert and format the content and publishes the result.

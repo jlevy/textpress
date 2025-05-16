@@ -1,9 +1,11 @@
+from kash.actions.core.markdownify import markdownify
 from kash.exec import kash_action
 from kash.exec.preconditions import (
     has_full_html_page_body,
+    has_html_body,
     has_simple_text_body,
     is_docx_resource,
-    is_html,
+    is_url_resource,
 )
 from kash.kits.docs.actions.text.docx_to_md import docx_to_md
 from kash.kits.docs.actions.text.endnotes_to_footnotes import endnotes_to_footnotes
@@ -14,11 +16,16 @@ from texpr.doc_cleanups import gemini_cleanups
 
 
 @kash_action(
-    precondition=(is_docx_resource | is_html | has_simple_text_body) & ~has_full_html_page_body
+    precondition=is_url_resource
+    | is_docx_resource
+    | has_html_body
+    | has_simple_text_body & ~has_full_html_page_body
 )
 def textpress_convert(input: ActionInput) -> ActionResult:
     item = input.items[0]
-    if is_html(item) or has_simple_text_body(item):
+    if is_url_resource(item):
+        result_item = markdownify(item)
+    elif has_html_body(item) or has_simple_text_body(item):
         result_item = item
     elif is_docx_resource(item):
         # First do basic conversion to markdown.

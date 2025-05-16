@@ -1,10 +1,12 @@
+from kash.actions.core.markdownify import markdownify
 from kash.config.logger import get_logger
 from kash.exec import kash_action
 from kash.exec.preconditions import (
     has_full_html_page_body,
+    has_html_body,
     has_simple_text_body,
     is_docx_resource,
-    is_html,
+    is_url_resource,
 )
 from kash.kits.docs.actions.text.minify_html import minify_html
 from kash.model import (
@@ -28,7 +30,8 @@ log = get_logger(__name__)
 @kash_action(
     expected_args=ONE_ARG,
     expected_outputs=TWO_ARGS,
-    precondition=(is_docx_resource | is_html | has_simple_text_body) & ~has_full_html_page_body,
+    precondition=(is_url_resource | is_docx_resource | has_html_body | has_simple_text_body)
+    & ~has_full_html_page_body,
     params=(
         Param("add_title", "Add a title to the page body.", type=bool),
         Param("add_classes", "Space-delimited classes to add to the body of the page.", type=str),
@@ -38,7 +41,9 @@ def textpress_format(
     input: ActionInput, add_title: bool = False, add_classes: str | None = None
 ) -> ActionResult:
     item = input.items[0]
-    if is_html(item) or has_simple_text_body(item):
+    if is_url_resource(item):
+        raw_text_item = markdownify(item)
+    elif has_html_body(item) or has_simple_text_body(item):
         raw_text_item = item
     elif is_docx_resource(item):
         log.message("Converting docx to Markdown...")

@@ -13,7 +13,7 @@ from textwrap import dedent
 from typing import Literal
 
 from clideps.utils.readable_argparse import ReadableColorFormatter
-from kash.utils.common.url import Url
+from kash.utils.common.url import Url, is_url
 from prettyfmt import fmt_path
 from rich import print as rprint
 
@@ -93,7 +93,7 @@ def build_parser() -> argparse.ArgumentParser:
         if func in {convert, format, publish}:
             add_general_flags(subparser)
         if func in {clipboard_copy, convert, format, publish}:
-            subparser.add_argument("input_path", type=str, help="Path to the input file")
+            subparser.add_argument("input", type=str, help="Path or URL to the input file")
         if func in {clipboard_paste}:
             subparser.add_argument(
                 "output_path",
@@ -207,7 +207,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
         try:
             result: ActionResult
             if subcommand == clipboard_copy.__name__:
-                clipboard_copy(Path(args.input_path))
+                clipboard_copy(Path(args.input))
             elif subcommand == clipboard_paste.__name__:
                 output_path = Path(args.output_path)
                 # If output_path has no directory portion work in the workspace.
@@ -219,13 +219,13 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                     store_paths.append(output_path.resolve())
             else:
                 # Commands with a single input path and store path outputs.
-                input_path: Path = Path(args.input_path)
+                input = Url(args.input) if is_url(args.input) else Path(args.input)
                 if subcommand == convert.__name__:
-                    result = convert(input_path)
+                    result = convert(input)
                     assert result.items[0].store_path
                     store_paths.append(Path(result.items[0].store_path))
                 elif subcommand == format.__name__:
-                    result = format(input_path, add_classes=clean_class_names(args.add_classes))
+                    result = format(input, add_classes=clean_class_names(args.add_classes))
 
                     md_item = next(item for item in result.items if item.format == Format.markdown)
                     html_item = next(item for item in result.items if item.format == Format.html)
@@ -237,9 +237,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                     if args.show:
                         open_url(local_url)
                 elif subcommand == publish.__name__:
-                    result = publish(
-                        Path(args.input_path), add_classes=clean_class_names(args.add_classes)
-                    )
+                    result = publish(input, add_classes=clean_class_names(args.add_classes))
 
                     md_item = next(item for item in result.items if item.format == Format.markdown)
                     html_item = next(item for item in result.items if item.format == Format.html)
