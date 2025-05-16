@@ -29,9 +29,14 @@ log = get_logger(__name__)
     expected_args=ONE_ARG,
     expected_outputs=TWO_ARGS,
     precondition=(is_docx_resource | is_html | has_simple_text_body) & ~has_full_html_page_body,
-    params=(Param("add_title", "Add a title to the page body.", type=bool),),
+    params=(
+        Param("add_title", "Add a title to the page body.", type=bool),
+        Param("add_classes", "Space-delimited classes to add to the body of the page.", type=str),
+    ),
 )
-def textpress_format(input: ActionInput, add_title: bool = False) -> ActionResult:
+def textpress_format(
+    input: ActionInput, add_title: bool = False, add_classes: str | None = None
+) -> ActionResult:
     item = input.items[0]
     if is_html(item) or has_simple_text_body(item):
         raw_text_item = item
@@ -46,7 +51,9 @@ def textpress_format(input: ActionInput, add_title: bool = False) -> ActionResul
     title = item.title or raw_text_item.body_heading()
     text_item = raw_text_item.derived_copy(type=ItemType.export, title=title)
 
-    raw_html_item = textpress_render_template(text_item, add_title=add_title)
+    raw_html_item = textpress_render_template(
+        text_item, add_title=add_title, add_classes=add_classes
+    )
 
     minified_item = minify_html(raw_html_item)
 

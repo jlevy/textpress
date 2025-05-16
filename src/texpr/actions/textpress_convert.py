@@ -23,11 +23,10 @@ def textpress_convert(input: ActionInput) -> ActionResult:
     elif is_docx_resource(item):
         # First do basic conversion to markdown.
         md_item = docx_to_md(item)
+
+        # Cleanups for Gemini reports. Should be fine on other files too.
         assert md_item.body
         md_item.body = gemini_cleanups(md_item.body)
-
-        # Gemini reports use superscripts with a long list of numeric references.
-        # This converts them to proper footnotes. Should be safe for any doc.
         result_item = endnotes_to_footnotes(md_item)
     else:
         # TODO: Add PDF support.

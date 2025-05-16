@@ -28,12 +28,17 @@ log = get_logger(__name__)
     expected_args=ONE_ARG,
     expected_outputs=TWO_ARGS,
     precondition=is_docx_resource | has_html_body | has_simple_text_body,
-    params=(Param("add_title", "Add the document title to the page body.", type=bool),),
+    params=(
+        Param("add_title", "Add the document title to the page body.", type=bool),
+        Param("add_classes", "Space-delimited classes to add to the body of the page.", type=str),
+    ),
     cacheable=False,
 )
-def textpress_publish(input: ActionInput, add_title: bool = False) -> ActionResult:
+def textpress_publish(
+    input: ActionInput, add_title: bool = False, add_classes: str | None = None
+) -> ActionResult:
     item = input.items[0]
-    format_result = textpress_format(input, add_title=add_title)
+    format_result = textpress_format(input, add_title=add_title, add_classes=add_classes)
     md_item = next(item for item in format_result.items if item.format and item.format.is_markdown)
     html_item = next(item for item in format_result.items if item.format == Format.html)
 

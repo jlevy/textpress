@@ -104,9 +104,15 @@ def build_parser() -> argparse.ArgumentParser:
             )
         if func in {format, publish}:
             subparser.add_argument(
-                "--open",
+                "--show",
                 action="store_true",
                 help="after it is complete, open the result in your web browser",
+            )
+            subparser.add_argument(
+                "--add_classes",
+                type=str,
+                default="",
+                help="Space-delimited classes to add to the body of the page.",
             )
 
     return parser
@@ -163,6 +169,15 @@ def display_output(ws_path: Path, store_paths: list[Path], published_urls: list[
     rprint()
 
 
+def clean_class_names(classes_str: str) -> str:
+    """
+    Clean and normalize space or comma-separated class names and remove quotes.
+    """
+    classes_str = classes_str.strip("\"'")
+    classes = [c.strip().strip("\"'") for c in classes_str.replace(",", " ").split()]
+    return " ".join(classes)
+
+
 def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     # Lazy imports! Can be slow so only do for processing commands.
     from kash.config.logger import CustomLogger, get_log_settings, get_logger
@@ -210,7 +225,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                     assert result.items[0].store_path
                     store_paths.append(Path(result.items[0].store_path))
                 elif subcommand == format.__name__:
-                    result = format(input_path)
+                    result = format(input_path, add_classes=clean_class_names(args.add_classes))
 
                     md_item = next(item for item in result.items if item.format == Format.markdown)
                     html_item = next(item for item in result.items if item.format == Format.html)
@@ -219,10 +234,12 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                     store_paths.extend([Path(md_item.store_path), Path(html_item.store_path)])
 
                     local_url = local_url_for(path=ws_path / Path(html_item.store_path))
-                    if args.open:
+                    if args.show:
                         open_url(local_url)
                 elif subcommand == publish.__name__:
-                    result = publish(Path(args.input_path))
+                    result = publish(
+                        Path(args.input_path), add_classes=clean_class_names(args.add_classes)
+                    )
 
                     md_item = next(item for item in result.items if item.format == Format.markdown)
                     html_item = next(item for item in result.items if item.format == Format.html)
@@ -233,7 +250,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
 
                     store_paths.extend([Path(md_item.store_path), Path(html_item.store_path)])
                     published_urls.extend([md_url, html_url])
-                    if args.open and _placehoder_username not in html_url:
+                    if args.show and _placehoder_username not in html_url:
                         webbrowser.open(html_url)
                 else:
                     raise ValueError(f"Unknown subcommand: {args.subcommand}")

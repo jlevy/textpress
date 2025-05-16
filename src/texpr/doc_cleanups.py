@@ -22,6 +22,7 @@ def _fix_works_cited(body: str) -> str:
 def gemini_cleanups(body: str) -> str:
     """
     Extra modifications to clean up Gemini Deep Research output.
+    Should be safe for other docs as well.
     """
 
     body = _fix_sup_space(body)

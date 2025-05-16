@@ -48,7 +48,7 @@ def convert(md_path: Path) -> ActionResult:
     return textpress_convert(input)
 
 
-def format(md_path: Path) -> ActionResult:
+def format(md_path: Path, add_classes: str | None = None) -> ActionResult:
     """
     Convert and format text, Markdown, or an HTML fragment to pretty, formatted,
     minified HTML using the TextPress template. Result contains clean Markdown
@@ -62,10 +62,10 @@ def format(md_path: Path) -> ActionResult:
     from texpr.actions.textpress_format import textpress_format
 
     input = prepare_action_input(md_path)
-    return textpress_format(input)
+    return textpress_format(input, add_classes=add_classes)
 
 
-def publish(path: Path) -> ActionResult:
+def publish(path: Path, add_classes: str | None = None) -> ActionResult:
     """
     Publish (or re-publish) a document as a Textpress webpage. Uses `format`
     to convert and format the content and publishes the result.
@@ -75,4 +75,4 @@ def publish(path: Path) -> ActionResult:
     from texpr.actions.textpress_publish import textpress_publish
 
     input = prepare_action_input(path)
-    return textpress_publish(input)
+    return textpress_publish(input, add_classes=add_classes)
