@@ -18,10 +18,9 @@ from prettyfmt import fmt_path
 from rich import print as rprint
 
 from texpr.cli_commands import (
-    clipboard_copy,
-    clipboard_paste,
     convert,
     format,
+    import_clipboard,
     publish,
 )
 from texpr.textpress_env import Env
@@ -78,8 +77,7 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
 
     for func in [
-        clipboard_copy,
-        clipboard_paste,
+        import_clipboard,
         convert,
         format,
         publish,
@@ -92,15 +90,15 @@ def build_parser() -> argparse.ArgumentParser:
         )
         if func in {convert, format, publish}:
             add_general_flags(subparser)
-        if func in {clipboard_copy, convert, format, publish}:
+        if func in {convert, format, publish}:
             subparser.add_argument("input", type=str, help="Path or URL to the input file")
-        if func in {clipboard_paste}:
+        if func in {import_clipboard}:
             subparser.add_argument(
-                "output_path",
+                "title",
                 type=str,
                 nargs="?",
-                default="untitled.md",
-                help="Path to the destination file (defaults to untitled.md)",
+                default="pasted_text",
+                help="Title for the imported item (default: pasted_text)",
             )
         if func in {format, publish}:
             subparser.add_argument(
@@ -206,17 +204,9 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
         published_urls: list[Url] = []
         try:
             result: ActionResult
-            if subcommand == clipboard_copy.__name__:
-                clipboard_copy(Path(args.input))
-            elif subcommand == clipboard_paste.__name__:
-                output_path = Path(args.output_path)
-                # If output_path has no directory portion work in the workspace.
-                if output_path.parent == Path():
-                    clipboard_paste(dest_path=ws_path / output_path)
-                    store_paths.append(output_path)
-                else:
-                    clipboard_paste(dest_path=output_path.resolve())
-                    store_paths.append(output_path.resolve())
+            if subcommand == import_clipboard.__name__:
+                store_path = import_clipboard(args.title)
+                store_paths.append(store_path)
             else:
                 # Commands with a single input path and store path outputs.
                 input = Url(args.input) if is_url(args.input) else Path(args.input)

@@ -6,29 +6,33 @@ from typing import TYPE_CHECKING
 from kash.utils.common.url import Url
 
 # We wrap each command as a convenient way to customize CLI docs and to make
-# all imports lazy, since some of these actions have a lot of dependencies.
+# all imports lazy, since some of these actions have a lot of dependencies that
+# make imports slow. This way CLI help etc feels snappy.
 if TYPE_CHECKING:
     from kash.model import ActionResult
 
 
-def clipboard_copy(source_path: Path) -> None:
+def import_clipboard(title: str, plaintext: bool = False) -> Path:
     """
-    Copy contents of a file to the OS (system) clipboard. Use to copy
-    results from Textpress and paste elsewhere.
+    Import the contents of the OS (system) clipboard into a file in the workspace.
+    Use to copy content from elsewhere (like a doc or chat session) and paste into
+    a file for use by Textpress. Presumes Markdown format unless the `plaintext` flag
+    is set.
     """
-    from kash.commands.base.basic_file_commands import clipboard_copy
 
-    clipboard_copy(source_path)
+    import pyperclip
+    from kash.model import Format, Item, ItemType
+    from kash.workspaces import current_ws
 
+    contents = pyperclip.paste()
+    if not contents.strip():
+        raise ValueError("Clipboard is empty")
 
-def clipboard_paste(dest_path: Path) -> None:
-    """
-    Paste contents of the OS (system) clipboard into a file. Use to copy
-    content from elsewhere and paste into a file for use by Textpress.
-    """
-    from kash.commands.base.basic_file_commands import clipboard_paste
+    ws = current_ws()
+    format = Format.plaintext if plaintext else Format.markdown
+    store_path = ws.save(Item(type=ItemType.resource, format=format, title=title, body=contents))
 
-    clipboard_paste(dest_path)
+    return store_path
 
 
 def convert(md_path: Path | Url) -> ActionResult:
