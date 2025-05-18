@@ -5,6 +5,7 @@ from kash.exec.preconditions import (
     has_html_body,
     has_simple_text_body,
     is_docx_resource,
+    is_pdf_resource,
     is_url_resource,
 )
 from kash.kits.docs.actions.text.docx_to_md import docx_to_md
@@ -18,12 +19,13 @@ from texpr.doc_cleanups import gemini_cleanups
 @kash_action(
     precondition=is_url_resource
     | is_docx_resource
+    | is_pdf_resource
     | has_html_body
-    | has_simple_text_body & ~has_full_html_page_body
+    | has_simple_text_body
 )
 def textpress_convert(input: ActionInput) -> ActionResult:
     item = input.items[0]
-    if is_url_resource(item):
+    if is_url_resource(item) or has_full_html_page_body(item):
         result_item = markdownify(item)
     elif has_html_body(item) or has_simple_text_body(item):
         result_item = item
@@ -36,7 +38,6 @@ def textpress_convert(input: ActionInput) -> ActionResult:
         md_item.body = gemini_cleanups(md_item.body)
         result_item = endnotes_to_footnotes(md_item)
     else:
-        # TODO: Add PDF support.
         raise InvalidInput(f"Don't know how to convert item to HTML: {item.type}")
 
     return ActionResult(items=[result_item])
