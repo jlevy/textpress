@@ -12,6 +12,18 @@ if TYPE_CHECKING:
     from kash.model import ActionResult
 
 
+def setup(show: bool = False) -> None:
+    """
+    Run this first! Helps you log in and get an API key to get set up to use Textpress.
+    """
+    from texpr.config import interactive_setup, show_setup
+
+    if show:
+        show_setup()
+    else:
+        interactive_setup()
+
+
 def import_clipboard(title: str, plaintext: bool = False) -> Path:
     """
     Import the contents of the OS (system) clipboard into a file in the workspace.

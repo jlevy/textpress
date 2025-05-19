@@ -12,6 +12,7 @@ from pathlib import Path
 from textwrap import dedent
 from typing import Literal
 
+from clideps.env_vars.env_enum import MissingEnvVar
 from clideps.utils.readable_argparse import ReadableColorFormatter
 from kash.utils.common.url import Url, is_url
 from prettyfmt import fmt_path
@@ -22,7 +23,9 @@ from texpr.cli_commands import (
     format,
     import_clipboard,
     publish,
+    setup,
 )
+from texpr.config import load_env
 from texpr.textpress_env import Env
 
 APP_NAME = "texpr"
@@ -30,6 +33,10 @@ APP_NAME = "texpr"
 DESCRIPTION = """Textpress: Simple publishing for complex docs"""
 
 DEFAULT_WORK_ROOT = Path("./textpress")
+
+ALL_COMMANDS = [setup, import_clipboard, convert, format, publish]
+
+ACTION_COMMANDS = [convert, format, publish]
 
 
 def get_app_version() -> str:
@@ -40,12 +47,9 @@ def get_app_version() -> str:
 
 
 def add_general_flags(parser: argparse.ArgumentParser) -> None:
-    """Add common flags to a parser."""
-    parser.add_argument(
-        "--rerun",
-        action="store_true",
-        help="rerun actions even if the outputs already exist in the workspace",
-    )
+    """
+    These are flags that should work anywhere (main parser and subparsers).
+    """
     parser.add_argument(
         "--debug", action="store_true", help="enable debug logging (log level: debug)"
     )
@@ -53,6 +57,17 @@ def add_general_flags(parser: argparse.ArgumentParser) -> None:
         "--verbose", action="store_true", help="enable verbose logging (log level: info)"
     )
     parser.add_argument("--quiet", action="store_true", help="only log errors (log level: error)")
+
+
+def add_action_flags(parser: argparse.ArgumentParser) -> None:
+    """
+    These are flags that work on kash actions.
+    """
+    parser.add_argument(
+        "--rerun",
+        action="store_true",
+        help="rerun actions even if the outputs already exist in the workspace",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -76,21 +91,22 @@ def build_parser() -> argparse.ArgumentParser:
     # Parsers for each command.
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
 
-    for func in [
-        import_clipboard,
-        convert,
-        format,
-        publish,
-    ]:
+    for func in ALL_COMMANDS:
         subparser = subparsers.add_parser(
             func.__name__,
             help=func.__doc__,
             description=func.__doc__,
             formatter_class=ReadableColorFormatter,
         )
-        if func in {convert, format, publish}:
-            add_general_flags(subparser)
-        if func in {convert, format, publish}:
+        add_general_flags(subparser)
+        if func in {setup}:
+            subparser.add_argument(
+                "--show",
+                action="store_true",
+                help="show the current config and environment variables",
+            )
+        if func in ACTION_COMMANDS:
+            add_action_flags(subparser)
             subparser.add_argument("input", type=str, help="Path or URL to the input file")
         if func in {import_clipboard}:
             subparser.add_argument(
@@ -185,6 +201,9 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
 
     log: CustomLogger = get_logger(__name__)
 
+    # Load the environment variables (from all possible sources).
+    load_env()
+
     # Now kash/workspace commands.
     # Have kash use textpress workspace.
     ws_root = Path(args.work_dir).resolve()
@@ -246,6 +265,11 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
             if store_paths or published_urls:
                 display_output(ws_path, store_paths, published_urls)
 
+        except MissingEnvVar as e:
+            log.error("Missing environment variable: %s", e)
+            rprint()
+            rprint("Run `[bold cyan]textpr setup[/bold cyan]` to set up your API key.")
+            return 1
         except Exception as e:
             log.error("Error running action: %s: %s", subcommand, e)
             log.info("Error details", exc_info=e)
@@ -262,6 +286,10 @@ def main() -> None:
 
     # As a convenience also allow dashes in the subcommand name.
     subcommand = args.subcommand.replace("-", "_")
+
+    if subcommand == setup.__name__:
+        setup(show=args.show)
+        return
 
     sys.exit(run_workspace_command(subcommand, args))
 

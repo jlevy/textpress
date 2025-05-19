@@ -41,7 +41,7 @@ dependencies = [
     "flowmark>=0.4.3",
     "kash-docs>=0.1.3",
     "rich>=14.0.0",
-    "clideps>=0.1.4"
+    "clideps>=0.1.5"
 ]
 
 
@@ -69,6 +69,7 @@ kash-shell = { git = "https://github.com/jlevy/kash.git" }
 # For local development:
 # kash-docs = { path = "../kash-docs", editable = true }
 # kash-shell = { path = "../kash", editable = true }
+# clideps = { path = "../clideps", editable = true }
 
 # ---- Build system ----
 
