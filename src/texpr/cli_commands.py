@@ -24,12 +24,12 @@ def setup(show: bool = False) -> None:
         interactive_setup()
 
 
-def import_clipboard(title: str, plaintext: bool = False) -> Path:
+def paste(title: str, plaintext: bool = False) -> Path:
     """
-    Import the contents of the OS (system) clipboard into a file in the workspace.
-    Use to copy content from elsewhere (like a doc or chat session) and paste into
-    a file for use by Textpress. Presumes Markdown format unless the `plaintext` flag
-    is set.
+    Paste the contents of the OS (system) clipboard into a file in the workspace.
+    Copy content elsewhere (like a doc or chat session) and use this command to
+    paste into a file for use by Textpress. Presumes Markdown format unless the
+    `--plaintext` flag is set.
     """
 
     import pyperclip

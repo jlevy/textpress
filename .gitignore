@@ -1,12 +1,17 @@
+# Textpress
+textpress/
+
 # Additions to standard GitHub .gitignore:
 *.bak
 *.orig
+.env
+.env.*
+.envrc
+.envrc.*
 tmp/
 trash/
 attic/
 .kash/
-textpress/
-.envrc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

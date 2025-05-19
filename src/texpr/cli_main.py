@@ -21,7 +21,7 @@ from rich import print as rprint
 from texpr.cli_commands import (
     convert,
     format,
-    import_clipboard,
+    paste,
     publish,
     setup,
 )
@@ -34,7 +34,7 @@ DESCRIPTION = """Textpress: Simple publishing for complex docs"""
 
 DEFAULT_WORK_ROOT = Path("./textpress")
 
-ALL_COMMANDS = [setup, import_clipboard, convert, format, publish]
+ALL_COMMANDS = [setup, paste, convert, format, publish]
 
 ACTION_COMMANDS = [convert, format, publish]
 
@@ -108,13 +108,17 @@ def build_parser() -> argparse.ArgumentParser:
         if func in ACTION_COMMANDS:
             add_action_flags(subparser)
             subparser.add_argument("input", type=str, help="Path or URL to the input file")
-        if func in {import_clipboard}:
+        if func in {paste}:
             subparser.add_argument(
-                "title",
+                "--title",
                 type=str,
-                nargs="?",
                 default="pasted_text",
                 help="Title for the imported item (default: pasted_text)",
+            )
+            subparser.add_argument(
+                "--plaintext",
+                action="store_true",
+                help="Treat input as plaintext instead of Markdown",
             )
         if func in {format, publish}:
             subparser.add_argument(
@@ -223,8 +227,8 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
         published_urls: list[Url] = []
         try:
             result: ActionResult
-            if subcommand == import_clipboard.__name__:
-                store_path = import_clipboard(args.title)
+            if subcommand == paste.__name__:
+                store_path = paste(args.title, plaintext=args.plaintext)
                 store_paths.append(store_path)
             else:
                 # Commands with a single input path and store path outputs.
