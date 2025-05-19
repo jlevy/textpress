@@ -17,11 +17,9 @@ from prettyfmt import fmt_lines, fmt_path
 from rich import print as rprint
 from strif import abbrev_str
 
-from texpr.textpress_env import Env
+from texpr.textpress_env import LOGIN_URL, Env
 
 REQUIRED_ENV_VARS = [Env.TEXTPRESS_API_KEY.value]
-
-LOGIN_URL = "https://app.texpr.com/login"
 
 
 class CancelSetup(RuntimeError):

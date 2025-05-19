@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import override
 
 from clideps.env_vars.env_enum import EnvEnum
 from strif import abbrev_str
+from typing_extensions import override
 
 
 class Env(EnvEnum):
@@ -44,3 +44,7 @@ def get_api_config() -> ApiConfig:
         api_root=Env.TEXTPRESS_API_ROOT.read_str(default="https://app.texpr.com"),
         publish_root=Env.TEXTPRESS_PUBLISH_ROOT.read_str(default="https://texpr.com"),
     )
+
+
+LOGIN_URL = "https://app.texpr.com/login"
+"""The URL for the Textpress login page."""

@@ -25,7 +25,7 @@ from texpr.cli_commands import (
     publish,
     setup,
 )
-from texpr.cli_config import load_env
+from texpr.cli_setup import load_env
 from texpr.textpress_api import get_user
 from texpr.textpress_env import get_api_config
 
