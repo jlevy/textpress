@@ -1,4 +1,8 @@
+from dataclasses import dataclass
+from typing import override
+
 from clideps.env_vars.env_enum import EnvEnum
+from strif import abbrev_str
 
 
 class Env(EnvEnum):
@@ -12,9 +16,31 @@ class Env(EnvEnum):
     TEXTPRESS_API_KEY = "TEXTPRESS_API_KEY"
     """The API key for Textpress."""
 
-    # TODO: These should probably be gotten from the API.
     TEXTPRESS_PUBLISH_ROOT = "TEXTPRESS_PUBLISH_ROOT"
     """The root directory for Textpress publish."""
 
-    TEXTPRESS_USERNAME = "TEXTPRESS_USERNAME"
-    """The username for Textpress."""
+
+@dataclass(frozen=True)
+class ApiConfig:
+    """
+    Configuration for the Textpress API.
+    """
+
+    api_key: str
+    api_root: str
+    publish_root: str
+
+    @override
+    def __str__(self) -> str:
+        return f"api_key={abbrev_str(self.api_key, 8)}, api_root={self.api_root}, publish_root={self.publish_root}"
+
+
+def get_api_config() -> ApiConfig:
+    """
+    Get the API config from the environment variables.
+    """
+    return ApiConfig(
+        api_key=Env.TEXTPRESS_API_KEY.read_str(),
+        api_root=Env.TEXTPRESS_API_ROOT.read_str(default="https://app.texpr.com"),
+        publish_root=Env.TEXTPRESS_PUBLISH_ROOT.read_str(default="https://texpr.com"),
+    )

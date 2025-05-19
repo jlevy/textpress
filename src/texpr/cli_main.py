@@ -25,8 +25,9 @@ from texpr.cli_commands import (
     publish,
     setup,
 )
-from texpr.config import load_env
-from texpr.textpress_env import Env
+from texpr.cli_config import load_env
+from texpr.textpress_api import get_user
+from texpr.textpress_env import get_api_config
 
 APP_NAME = "texpr"
 
@@ -151,9 +152,14 @@ _placehoder_username = "<your_username>"
 
 
 def public_url_for(path: Path) -> Url:
-    publish_root = Env.TEXTPRESS_PUBLISH_ROOT.read_str(default="https://texpr.com")
-    username = Env.TEXTPRESS_USERNAME.read_str(default=_placehoder_username)
+    config = get_api_config()
+    publish_root = config.publish_root
+    username = get_user(config).username
+    if not username.strip():
+        raise ValueError("Username is not set (configuration error?)")
     filename = path.name
+    if not filename.strip():
+        raise ValueError("Filename missing")
     return Url(f"{publish_root}/{username}/d/{filename}")
 
 
@@ -198,6 +204,7 @@ def clean_class_names(classes_str: str) -> str:
 
 def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     # Lazy imports! Can be slow so only do for processing commands.
+    import httpx
     from kash.config.logger import CustomLogger, get_log_settings, get_logger
     from kash.config.setup import kash_setup
     from kash.exec import kash_runtime
@@ -215,6 +222,8 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
 
     # Set up kash workspace root.
     kash_setup(rich_logging=True, kash_ws_root=ws_root, console_log_level=get_log_level(args))
+
+    log.info("Textpress config: %s", get_api_config())
 
     # Run actions in the context of this workspace.
     with kash_runtime(ws_path, rerun=args.rerun) as runtime:
@@ -270,11 +279,18 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                 display_output(ws_path, store_paths, published_urls)
 
         except MissingEnvVar as e:
+            rprint()
             log.error("Missing environment variable: %s", e)
             rprint()
             rprint("Run `[bold cyan]textpr setup[/bold cyan]` to set up your API key.")
             return 1
+        except httpx.HTTPStatusError as e:
+            rprint()
+            log.error("HTTP error: status %s: %s", e.response.status_code, e.request.url)
+            rprint()
+            return 1
         except Exception as e:
+            rprint()
             log.error("Error running action: %s: %s", subcommand, e)
             log.info("Error details", exc_info=e)
             log_file = get_log_settings().log_file_path

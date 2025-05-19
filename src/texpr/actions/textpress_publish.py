@@ -17,7 +17,7 @@ from kash.model import (
     Param,
 )
 from kash.workspaces import current_ws
-from prettyfmt import fmt_path
+from prettyfmt import fmt_lines, fmt_path
 
 from texpr.actions.textpress_format import textpress_format
 from texpr.textpress_api import publish_files
@@ -43,7 +43,10 @@ def textpress_publish(
     md_item = next(item for item in format_result.items if item.format and item.format.is_markdown)
     html_item = next(item for item in format_result.items if item.format == Format.html)
 
-    manifest = publish_files([md_item.absolute_path(), html_item.absolute_path()])
+    upload_paths = [md_item.absolute_path(), html_item.absolute_path()]
+    log.message("Publishing files:\n%s", fmt_lines(upload_paths))
+
+    manifest = publish_files(upload_paths)
 
     log.message("Published: %s", list(manifest.files.keys()))
 

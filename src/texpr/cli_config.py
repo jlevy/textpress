@@ -19,7 +19,7 @@ from strif import abbrev_str
 
 from texpr.textpress_env import Env
 
-REQUIRED_ENV_VARS = [Env.TEXTPRESS_API_KEY.value, Env.TEXTPRESS_USERNAME.value]
+REQUIRED_ENV_VARS = [Env.TEXTPRESS_API_KEY.value]
 
 LOGIN_URL = "https://app.texpr.com/login"
 
@@ -33,11 +33,7 @@ def _env_config_path() -> Path:
 
 
 def _validate_api_key(api_key: str) -> bool:
-    return bool(api_key and len(api_key.strip()) > 30 and api_key.strip().startswith("tp"))
-
-
-def _validate_username(username: str) -> bool:
-    return bool(username and len(username.strip()) > 0)
+    return bool(api_key and len(api_key.strip()) > 5 and api_key.strip().startswith("tp"))
 
 
 def read_env_vars(verbose: bool = False) -> bool:
@@ -46,7 +42,7 @@ def read_env_vars(verbose: bool = False) -> bool:
     if len(env_vars) == len(REQUIRED_ENV_VARS):
         if verbose:
             rprint(format_success("Found required environment variables:"))
-            rprint(fmt_lines([f"{k} = {repr(abbrev_str(v, 12))}" for k, v in env_vars.items()]))
+            rprint(fmt_lines([f"{k} = {repr(abbrev_str(v, 8))}" for k, v in env_vars.items()]))
             rprint()
         return True
 
@@ -125,14 +121,9 @@ def interactive_setup() -> None:
         if not api_key:
             raise CancelSetup
 
-        rprint()
-        username = input_simple_string("Enter your username: ", validate=_validate_username)
-        if not username:
-            raise CancelSetup
-
         update_env_file(
             _env_config_path(),
-            {Env.TEXTPRESS_API_KEY.value: api_key, Env.TEXTPRESS_USERNAME.value: username},
+            {Env.TEXTPRESS_API_KEY.value: api_key},
             create_if_missing=True,
         )
         rprint()
