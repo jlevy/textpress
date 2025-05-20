@@ -18,16 +18,15 @@ from kash.utils.common.url import Url, is_url
 from prettyfmt import fmt_path
 from rich import print as rprint
 
-from texpr.cli_commands import (
+from texpr.api.textpress_api import get_user
+from texpr.api.textpress_env import get_api_config
+from texpr.cli.cli_commands import (
     convert,
     format,
     paste,
     publish,
     setup,
 )
-from texpr.cli_setup import load_env
-from texpr.textpress_api import get_user
-from texpr.textpress_env import get_api_config
 
 APP_NAME = "texpr"
 
@@ -84,7 +83,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--work_dir",
         type=str,
         default=DEFAULT_WORK_ROOT,
-        help="work directory to use for workspace, logs, and cache",
+        help=f"work directory to use for workspace, logs, and cache (default: {DEFAULT_WORK_ROOT})",
     )
     # Add general flags to main parser
     add_general_flags(parser)
@@ -209,6 +208,8 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     from kash.config.setup import kash_setup
     from kash.exec import kash_runtime
     from kash.model import ActionResult, Format
+
+    from texpr.cli.cli_setup import load_env
 
     log: CustomLogger = get_logger(__name__)
 

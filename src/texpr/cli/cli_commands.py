@@ -16,7 +16,7 @@ def setup(show: bool = False) -> None:
     """
     Run this first! Helps you log in and get an API key to get set up to use Textpress.
     """
-    from texpr.cli_setup import interactive_setup, show_setup
+    from texpr.cli.cli_setup import interactive_setup, show_setup
 
     if show:
         show_setup()

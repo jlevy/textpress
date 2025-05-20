@@ -20,7 +20,7 @@ from kash.workspaces import current_ws
 from prettyfmt import fmt_lines, fmt_path
 
 from texpr.actions.textpress_format import textpress_format
-from texpr.textpress_api import publish_files
+from texpr.api.textpress_api import publish_files
 
 log = get_logger(__name__)
 

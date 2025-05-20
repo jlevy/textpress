@@ -17,7 +17,7 @@ from prettyfmt import fmt_lines, fmt_path
 from rich import print as rprint
 from strif import abbrev_str
 
-from texpr.textpress_env import LOGIN_URL, Env
+from texpr.api.textpress_env import LOGIN_URL, Env
 
 REQUIRED_ENV_VARS = [Env.TEXTPRESS_API_KEY.value]
 

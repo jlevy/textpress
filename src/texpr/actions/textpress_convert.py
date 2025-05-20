@@ -13,7 +13,7 @@ from kash.kits.docs.actions.text.endnotes_to_footnotes import endnotes_to_footno
 from kash.model import ActionInput, ActionResult
 from kash.utils.errors import InvalidInput
 
-from texpr.doc_cleanups import gemini_cleanups
+from texpr.docs.doc_cleanups import gemini_cleanups
 
 
 @kash_action(

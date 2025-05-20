@@ -1,17 +1,19 @@
+from __future__ import annotations
+
 import logging
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-import httpx
-from kash.utils.file_utils.file_formats_model import Format, detect_file_format
 from pydantic import BaseModel, Field
 from strif import hash_file
 from typing_extensions import override
 
-from texpr.http_client import get_http_client
-from texpr.textpress_env import ApiConfig, get_api_config
+from texpr.api.textpress_env import ApiConfig, get_api_config
+
+if TYPE_CHECKING:
+    from httpx import Client, Response
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +39,9 @@ class Route(Enum):
     def __str__(self):
         return self.value
 
-    def get(self, config: ApiConfig, params: dict[str, Any] | None = None) -> httpx.Response:
+    def get(self, config: ApiConfig, params: dict[str, Any] | None = None) -> Response:
+        from texpr.api.http_client import get_http_client
+
         client = get_http_client()
         url = self._route_url(config.api_root)
         headers = {"x-api-key": config.api_key}
@@ -48,7 +52,9 @@ class Route(Enum):
         response.raise_for_status()
         return response
 
-    def post(self, config: ApiConfig, json_data: dict[str, Any]) -> httpx.Response:
+    def post(self, config: ApiConfig, json_data: dict[str, Any]) -> Response:
+        from texpr.api.http_client import get_http_client
+
         client = get_http_client()
         url = self._route_url(config.api_root)
         headers = {
@@ -144,6 +150,8 @@ def get_presigned_urls(
     """
     Gets presigned URLs for uploading files.
     """
+    from kash.utils.file_utils.file_formats_model import Format, detect_file_format
+
     if files_to_delete is None:
         files_to_delete = []
 
@@ -172,7 +180,7 @@ def get_presigned_urls(
     return PresignResponse.model_validate(response.json())
 
 
-def upload_file(client: httpx.Client, file_path: Path, upload_info: dict[str, Any]) -> None:
+def upload_file(client: Client, file_path: Path, upload_info: dict[str, Any]) -> None:
     """
     Uploads a single file using the presigned URL and headers.
     """
@@ -229,6 +237,8 @@ def publish_files(
     """
     Publishes files (uploads and deletes) to Textpress.
     """
+    from texpr.api.http_client import get_http_client
+
     config = get_api_config()
 
     if delete_paths is None:

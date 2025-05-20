@@ -6,7 +6,7 @@ from kash.exec.preconditions import (
 )
 from kash.model import ONE_OR_MORE_ARGS, Format, Item, Param
 
-from texpr.render_webpage import render_webpage
+from texpr.docs.render_webpage import render_webpage
 
 
 @kash_action(
