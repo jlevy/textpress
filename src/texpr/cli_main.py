@@ -225,8 +225,10 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
 
     log.info("Textpress config: %s", get_api_config())
 
+    rerun = getattr(args, "rerun", False)
+
     # Run actions in the context of this workspace.
-    with kash_runtime(ws_path, rerun=args.rerun) as runtime:
+    with kash_runtime(ws_path, rerun=rerun) as runtime:
         # Show the user the workspace info.
         runtime.workspace.log_workspace_info()
 
