@@ -22,6 +22,7 @@ from texpr.api.textpress_api import get_user
 from texpr.api.textpress_env import get_api_config
 from texpr.cli.cli_commands import (
     convert,
+    files,
     format,
     paste,
     publish,
@@ -34,7 +35,7 @@ DESCRIPTION = """Textpress: Simple publishing for complex docs"""
 
 DEFAULT_WORK_ROOT = Path("./textpress")
 
-ALL_COMMANDS = [setup, paste, convert, format, publish]
+ALL_COMMANDS = [setup, paste, files, convert, format, publish]
 
 ACTION_COMMANDS = [convert, format, publish]
 
@@ -80,10 +81,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     # Common arguments for all actions.
     parser.add_argument(
-        "--work_dir",
+        "--work_root",
         type=str,
         default=DEFAULT_WORK_ROOT,
-        help=f"work directory to use for workspace, logs, and cache (default: {DEFAULT_WORK_ROOT})",
+        help=f"work directory root to use for workspace, logs, and cache directories (default: {DEFAULT_WORK_ROOT})",
     )
     # Add general flags to main parser
     add_general_flags(parser)
@@ -108,6 +109,13 @@ def build_parser() -> argparse.ArgumentParser:
         if func in ACTION_COMMANDS:
             add_action_flags(subparser)
             subparser.add_argument("input", type=str, help="Path or URL to the input file")
+
+        if func in {files}:
+            subparser.add_argument(
+                "--no_ignore",
+                action="store_true",
+                help="show hidden and ignored files",
+            )
         if func in {paste}:
             subparser.add_argument(
                 "--title",
@@ -218,7 +226,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
 
     # Now kash/workspace commands.
     # Have kash use textpress workspace.
-    ws_root = Path(args.work_dir).resolve()
+    ws_root = Path(args.work_root).resolve()
     ws_path = ws_root / "workspace"
 
     # Set up kash workspace root.
@@ -242,6 +250,8 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
             if subcommand == paste.__name__:
                 store_path = paste(args.title, plaintext=args.plaintext)
                 store_paths.append(store_path)
+            elif subcommand == files.__name__:
+                files(no_ignore=args.no_ignore)
             else:
                 # Commands with a single input path and store path outputs.
                 input = Url(args.input) if is_url(args.input) else Path(args.input)
