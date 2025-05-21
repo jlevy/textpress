@@ -6,7 +6,7 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from strif import hash_file
 from typing_extensions import override
 
@@ -70,6 +70,9 @@ class Route(Enum):
 
 
 class UserProfileResponse(BaseModel):
+    # TODO: Be consistent in api on snake_case vs camelCase.
+    model_config = ConfigDict(populate_by_name=True)  # pyright: ignore
+
     user_id: str = Field(..., alias="userId")
     username: str
 
