@@ -2,7 +2,7 @@ from kash.actions.core.markdownify import markdownify
 from kash.config.logger import get_logger
 from kash.exec import kash_action
 from kash.exec.preconditions import (
-    has_full_html_page_body,
+    has_fullpage_html_body,
     has_html_body,
     has_simple_text_body,
     is_docx_resource,
@@ -31,7 +31,7 @@ log = get_logger(__name__)
     expected_args=ONE_ARG,
     expected_outputs=TWO_ARGS,
     precondition=(is_url_resource | is_docx_resource | has_html_body | has_simple_text_body)
-    & ~has_full_html_page_body,
+    & ~has_fullpage_html_body,
     params=(
         Param("add_title", "Add a title to the page body.", type=bool),
         Param("add_classes", "Space-delimited classes to add to the body of the page.", type=str),

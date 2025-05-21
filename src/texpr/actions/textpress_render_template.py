@@ -1,6 +1,6 @@
 from kash.exec import kash_action
 from kash.exec.preconditions import (
-    has_full_html_page_body,
+    has_fullpage_html_body,
     has_html_body,
     has_simple_text_body,
 )
@@ -11,7 +11,7 @@ from texpr.docs.render_webpage import render_webpage
 
 @kash_action(
     expected_args=ONE_OR_MORE_ARGS,
-    precondition=(has_html_body | has_simple_text_body) & ~has_full_html_page_body,
+    precondition=(has_html_body | has_simple_text_body) & ~has_fullpage_html_body,
     params=(
         Param("add_title", "Add a title to the page body.", type=bool),
         Param("add_classes", "Space-delimited classes to add to the body of the page.", type=str),

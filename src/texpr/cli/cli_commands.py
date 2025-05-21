@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 def setup(show: bool = False) -> None:
     """
-    Run this first! Helps you log in and get an API key to get set up to use Textpress.
+    Run this first! Helps you log in and get an API key to use with Textpress.
     """
     from texpr.cli.cli_setup import interactive_setup, show_setup
 

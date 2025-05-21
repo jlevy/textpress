@@ -69,6 +69,11 @@ def add_action_flags(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help="rerun actions even if the outputs already exist in the workspace",
     )
+    parser.add_argument(
+        "--refetch",
+        action="store_true",
+        help="refetch cached web or media content, even if it is already in the workspace cache",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -235,9 +240,10 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     log.info("Textpress config: %s", get_api_config())
 
     rerun = getattr(args, "rerun", False)
+    refetch = getattr(args, "refetch", False)
 
     # Run actions in the context of this workspace.
-    with kash_runtime(ws_path, rerun=rerun) as runtime:
+    with kash_runtime(ws_path, rerun=rerun, refetch=refetch) as runtime:
         # Show the user the workspace info.
         runtime.workspace.log_workspace_info()
 
