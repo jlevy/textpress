@@ -1,7 +1,7 @@
 # textpress
 
-Preview! In progress.
-Not everything works yet!
+This is the Textpress CLI. Things are new and not everything works yet but please give
+it a try!
 
 See [Textpress](https://textpress.md) for more info.
 
