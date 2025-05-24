@@ -1,7 +1,19 @@
-# texpr
+# textpress
 
-**The `texpr` package is now archived.
-Use [textpress](https://pypi.org/project/textpress/) instead.**
+Preview! In progress.
+Not everything works yet!
+
+See [Textpress](https://textpress.md) for more info.
+
+* * *
+
+## Project Docs
+
+For how to install uv and Python, see [installation.md](installation.md).
+
+For development workflows, see [development.md](development.md).
+
+For instructions on publishing to PyPI, see [publishing.md](publishing.md).
 
 * * *
 

@@ -1,7 +1,7 @@
 """
 Convert, edit, and publish content in Textpress.
 
-More information: https://github.com/jlevy/texpr
+More information: https://github.com/jlevy/textpress
 """
 
 import argparse
@@ -18,9 +18,9 @@ from kash.utils.common.url import Url, is_url
 from prettyfmt import fmt_path
 from rich import print as rprint
 
-from texpr.api.textpress_api import get_user
-from texpr.api.textpress_env import get_api_config
-from texpr.cli.cli_commands import (
+from textpress.api.textpress_api import get_user
+from textpress.api.textpress_env import get_api_config
+from textpress.cli.cli_commands import (
     convert,
     files,
     format,
@@ -29,7 +29,7 @@ from texpr.cli.cli_commands import (
     setup,
 )
 
-APP_NAME = "texpr"
+APP_NAME = "textpress"
 
 DESCRIPTION = """Textpress: Simple publishing for complex docs"""
 
@@ -222,7 +222,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     from kash.exec import kash_runtime
     from kash.model import ActionResult, Format
 
-    from texpr.cli.cli_setup import load_env
+    from textpress.cli.cli_setup import load_env
 
     log: CustomLogger = get_logger(__name__)
 

@@ -17,7 +17,7 @@ from prettyfmt import fmt_lines, fmt_path
 from rich import print as rprint
 from strif import abbrev_str
 
-from texpr.api.textpress_env import LOGIN_URL, Env
+from textpress.api.textpress_env import LOGIN_URL, Env
 
 REQUIRED_ENV_VARS = [Env.TEXTPRESS_API_KEY.value]
 
@@ -95,13 +95,13 @@ def interactive_setup() -> None:
         rprint()
         rprint(
             "You will need a Textpress account to get an API key. "
-            "Visit `app.texpr.com` to create an account or log in."
+            "Visit `app.textpress.com` to create an account or log in."
         )
         rprint("[bright_black](Hit Ctrl-C to cancel.)[/bright_black]")
         rprint()
 
         if input_confirm(
-            "Visit `app.texpr.com` now?",
+            "Visit `app.textpress.com` now?",
             default=True,
         ):
             webbrowser.open(LOGIN_URL)
@@ -128,7 +128,7 @@ def interactive_setup() -> None:
         rprint(format_success(f"Settings saved to: {fmt_path(_env_config_path())}"))
         rprint()
         rprint(
-            "You're all set! Run `[bold cyan]texpr --help[/bold cyan]` for the list of commands."
+            "You're all set! Run `[bold cyan]textpress --help[/bold cyan]` for the list of commands."
         )
         rprint()
 

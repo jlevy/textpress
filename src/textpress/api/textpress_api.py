@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from strif import hash_file
 from typing_extensions import override
 
-from texpr.api.textpress_env import ApiConfig, get_api_config
+from textpress.api.textpress_env import ApiConfig, get_api_config
 
 if TYPE_CHECKING:
     from httpx import Client, Response
@@ -40,7 +40,7 @@ class Route(Enum):
         return self.value
 
     def get(self, config: ApiConfig, params: dict[str, Any] | None = None) -> Response:
-        from texpr.api.http_client import get_http_client
+        from textpress.api.http_client import get_http_client
 
         client = get_http_client()
         url = self._route_url(config.api_root)
@@ -53,7 +53,7 @@ class Route(Enum):
         return response
 
     def post(self, config: ApiConfig, json_data: dict[str, Any]) -> Response:
-        from texpr.api.http_client import get_http_client
+        from textpress.api.http_client import get_http_client
 
         client = get_http_client()
         url = self._route_url(config.api_root)
@@ -240,7 +240,7 @@ def publish_files(
     """
     Publishes files (uploads and deletes) to Textpress.
     """
-    from texpr.api.http_client import get_http_client
+    from textpress.api.http_client import get_http_client
 
     config = get_api_config()
 

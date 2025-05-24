@@ -19,7 +19,7 @@ def setup(show: bool = False) -> None:
     your setup. (If you prefer, you can instead set the `TEXPRESS_API_KEY`
     environment variable yourself.)
     """
-    from texpr.cli.cli_setup import interactive_setup, show_setup
+    from textpress.cli.cli_setup import interactive_setup, show_setup
 
     if show:
         show_setup()
@@ -79,7 +79,7 @@ def convert(md_path: Path | Url) -> ActionResult:
     """
     from kash.exec import prepare_action_input
 
-    from texpr.actions.textpress_convert import textpress_convert
+    from textpress.actions.textpress_convert import textpress_convert
 
     input = prepare_action_input(md_path)
     return textpress_convert(input)
@@ -96,7 +96,7 @@ def format(md_path: Path | Url, add_classes: str | None = None) -> ActionResult:
     """
     from kash.exec import prepare_action_input
 
-    from texpr.actions.textpress_format import textpress_format
+    from textpress.actions.textpress_format import textpress_format
 
     input = prepare_action_input(md_path)
     return textpress_format(input, add_classes=add_classes)
@@ -109,7 +109,7 @@ def publish(path: Path | Url, add_classes: str | None = None) -> ActionResult:
     """
     from kash.exec import prepare_action_input
 
-    from texpr.actions.textpress_publish import textpress_publish
+    from textpress.actions.textpress_publish import textpress_publish
 
     input = prepare_action_input(path)
     return textpress_publish(input, add_classes=add_classes)

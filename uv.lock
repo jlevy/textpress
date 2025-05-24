@@ -2810,7 +2810,7 @@ wheels = [
 ]
 
 [[package]]
-name = "texpr"
+name = "textpress"
 source = { editable = "." }
 dependencies = [
     { name = "clideps" },

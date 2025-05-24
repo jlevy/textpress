@@ -1,12 +1,12 @@
 # ---- Project Info and Dependencies ----
 
 [project.urls]
-Repository = "https://github.com/jlevy/texpr"
+Repository = "https://github.com/jlevy/textpress"
 # Homepage = "https://..."
 # Documentation = "https://..."
 
 [project]
-name = "texpr"
+name = "textpress"
 description = "Textpress: Simple publishing for complex docs"
 authors = [
     { name="Joshua Levy", email="joshua@cal.berkeley.edu" },
@@ -60,7 +60,7 @@ dev = [
 
 [project.scripts]
 # Add script entry points here:
-texpr = "texpr.cli.cli_main:main"
+textpress = "textpress.cli.cli_main:main"
 
 [tool.uv.sources]
 # For bleeding edge:
@@ -93,7 +93,7 @@ bump = "true"
 
 [tool.hatch.build.targets.wheel]
 # The source location for the package.
-packages = ["src/texpr"]
+packages = ["src/textpress"]
 
 
 # ---- Settings ----

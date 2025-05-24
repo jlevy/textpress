@@ -21,8 +21,8 @@ from kash.model import (
 from kash.utils.errors import InvalidInput
 from prettyfmt import fmt_lines
 
-from texpr.actions.textpress_convert import textpress_convert
-from texpr.actions.textpress_render_template import textpress_render_template
+from textpress.actions.textpress_convert import textpress_convert
+from textpress.actions.textpress_render_template import textpress_render_template
 
 log = get_logger(__name__)
 
