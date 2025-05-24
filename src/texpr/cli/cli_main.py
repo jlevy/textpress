@@ -117,7 +117,7 @@ def build_parser() -> argparse.ArgumentParser:
 
         if func in {files}:
             subparser.add_argument(
-                "--no_ignore",
+                "--all",
                 action="store_true",
                 help="show hidden and ignored files",
             )
@@ -257,7 +257,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                 store_path = paste(args.title, plaintext=args.plaintext)
                 store_paths.append(store_path)
             elif subcommand == files.__name__:
-                files(no_ignore=args.no_ignore)
+                files(all=args.all)
             else:
                 # Commands with a single input path and store path outputs.
                 input = Url(args.input) if is_url(args.input) else Path(args.input)

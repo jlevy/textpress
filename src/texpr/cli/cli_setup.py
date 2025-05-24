@@ -72,10 +72,9 @@ def show_setup() -> bool:
     if _env_config_path().exists():
         rprint(format_success(f"Found config file at {fmt_path(_env_config_path())}"))
     else:
-        rprint(format_failure(f"No config file found at {fmt_path(_env_config_path())}"))
+        rprint(format_failure(f"No config file at {fmt_path(_env_config_path())}"))
 
     if not load_env(verbose=True):
-        rprint()
         rprint(format_failure("Required environment variables not found."))
         return False
 
@@ -84,24 +83,25 @@ def show_setup() -> bool:
 
 def interactive_setup() -> None:
     try:
+        print_heading("Configuring environment variables")
+
         found = show_setup()
         if found:
-            rprint()
-            rprint("You already have an API key configured.")
-            rprint()
-            if input_confirm("Do you want to re-run setup?", default=False):
-                pass
-            else:
-                raise CancelSetup
+            rprint(
+                "You already have an API key configured. But you can continue to "
+                "use a different account or retrieve your API key again."
+            )
 
-        print_heading("Configuring environment variables")
         rprint()
-        rprint("You will need a Textpress account to get an API key.")
+        rprint(
+            "You will need a Textpress account to get an API key. "
+            "Visit `app.texpr.com` to create an account or log in."
+        )
         rprint("[bright_black](Hit Ctrl-C to cancel.)[/bright_black]")
         rprint()
 
         if input_confirm(
-            "Do you want to set up an account? (This will open app.texpr.com/login)",
+            "Visit `app.texpr.com` now?",
             default=True,
         ):
             webbrowser.open(LOGIN_URL)

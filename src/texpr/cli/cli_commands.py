@@ -15,6 +15,9 @@ if TYPE_CHECKING:
 def setup(show: bool = False) -> None:
     """
     Run this first! Helps you log in and get an API key to use with Textpress.
+    You can rerun this to get your API key again or use `--show` to confirm
+    your setup. (If you prefer, you can instead set the `TEXPRESS_API_KEY`
+    environment variable yourself.)
     """
     from texpr.cli.cli_setup import interactive_setup, show_setup
 
@@ -47,7 +50,7 @@ def paste(title: str, plaintext: bool = False) -> Path:
     return store_path
 
 
-def files(no_ignore: bool = False) -> None:
+def files(all: bool = False) -> None:
     """
     List the files in the workspace. This holds pasted text files, imported docs and
     URLs, converted Markdown files, and exported Markdown and HTML outputs. Workspace
@@ -60,7 +63,7 @@ def files(no_ignore: bool = False) -> None:
 
     ws = current_ws()
     rprint()
-    files(ws.base_dir, overview=True, no_ignore=no_ignore)
+    files(ws.base_dir, overview=True, all=all)
 
 
 def convert(md_path: Path | Url) -> ActionResult:
