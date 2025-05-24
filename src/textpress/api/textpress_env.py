@@ -41,10 +41,10 @@ def get_api_config() -> ApiConfig:
     """
     return ApiConfig(
         api_key=Env.TEXTPRESS_API_KEY.read_str(),
-        api_root=Env.TEXTPRESS_API_ROOT.read_str(default="https://app.textpress.com"),
-        publish_root=Env.TEXTPRESS_PUBLISH_ROOT.read_str(default="https://textpress.com"),
+        api_root=Env.TEXTPRESS_API_ROOT.read_str(default="https://app.textpress.md"),
+        publish_root=Env.TEXTPRESS_PUBLISH_ROOT.read_str(default="https://textpress.md"),
     )
 
 
-LOGIN_URL = "https://app.textpress.com/login"
+LOGIN_URL = "https://app.textpress.md/login"
 """The URL for the Textpress login page."""

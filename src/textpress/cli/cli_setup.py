@@ -1,3 +1,4 @@
+import sys
 import webbrowser
 from pathlib import Path
 
@@ -24,6 +25,11 @@ REQUIRED_ENV_VARS = [Env.TEXTPRESS_API_KEY.value]
 
 class CancelSetup(RuntimeError):
     pass
+
+
+def _cli_name() -> str:
+    """The actual CLI command name."""
+    return Path(sys.argv[0]).stem
 
 
 def _env_config_path() -> Path:
@@ -95,13 +101,13 @@ def interactive_setup() -> None:
         rprint()
         rprint(
             "You will need a Textpress account to get an API key. "
-            "Visit `app.textpress.com` to create an account or log in."
+            "Visit `app.textpress.md` to create an account or log in."
         )
         rprint("[bright_black](Hit Ctrl-C to cancel.)[/bright_black]")
         rprint()
 
         if input_confirm(
-            "Visit `app.textpress.com` now?",
+            "Visit `app.textpress.md` now?",
             default=True,
         ):
             webbrowser.open(LOGIN_URL)
@@ -128,7 +134,7 @@ def interactive_setup() -> None:
         rprint(format_success(f"Settings saved to: {fmt_path(_env_config_path())}"))
         rprint()
         rprint(
-            "You're all set! Run `[bold cyan]textpress --help[/bold cyan]` for the list of commands."
+            f"You're all set! Run `[bold cyan]{_cli_name()} --help[/bold cyan]` for the list of commands."
         )
         rprint()
 
