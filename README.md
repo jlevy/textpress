@@ -1,9 +1,8 @@
 # textpress
 
-This is the Textpress CLI. Things are new and not everything works yet but please give
-it a try!
-
-See [Textpress](https://textpress.md) for more info.
+This is the Textpress CLI. See [Textpress](https://textpress.md) for more info.
+Things are new and still have some rough edges.
+But please read more there and give it a try!
 
 * * *
 

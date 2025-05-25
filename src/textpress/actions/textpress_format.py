@@ -1,4 +1,3 @@
-from kash.actions.core.markdownify import markdownify
 from kash.config.logger import get_logger
 from kash.exec import kash_action
 from kash.exec.preconditions import (
@@ -18,7 +17,6 @@ from kash.model import (
     ItemType,
     Param,
 )
-from kash.utils.errors import InvalidInput
 from prettyfmt import fmt_lines
 
 from textpress.actions.textpress_convert import textpress_convert
@@ -40,25 +38,13 @@ log = get_logger(__name__)
 def textpress_format(
     input: ActionInput, add_title: bool = False, add_classes: str | None = None
 ) -> ActionResult:
-    item = input.items[0]
-    if is_url_resource(item):
-        raw_text_item = markdownify(item)
-    elif has_html_body(item) or has_simple_text_body(item):
-        raw_text_item = item
-    elif is_docx_resource(item):
-        log.message("Converting docx to Markdown...")
-        raw_text_item = textpress_convert(input).items[0]
-    else:
-        # TODO: Add PDF support.
-        raise InvalidInput(f"Don't know how to convert item to HTML: {item.type}")
+    md_item = textpress_convert(input).items[0]
 
     # Export the text item with original title or the heading if we can get it from the body.
-    title = item.title or raw_text_item.body_heading()
-    text_item = raw_text_item.derived_copy(type=ItemType.export, title=title)
+    title = md_item.title or md_item.body_heading()
+    md_item = md_item.derived_copy(type=ItemType.export, title=title)
 
-    raw_html_item = textpress_render_template(
-        text_item, add_title=add_title, add_classes=add_classes
-    )
+    raw_html_item = textpress_render_template(md_item, add_title=add_title, add_classes=add_classes)
 
     minified_item = minify_html(raw_html_item)
 
@@ -70,8 +56,8 @@ def textpress_format(
         body=minified_item.body,
     )
 
-    log.message("Formatted HTML item from text item:\n%s", fmt_lines([raw_text_item, html_item]))
+    log.message("Formatted HTML item from text item:\n%s", fmt_lines([md_item, html_item]))
 
     # Setting overwrite means we'll always pick the same output paths and
     # both .html and .md filenames will match.
-    return ActionResult(items=[text_item, html_item], overwrite=True)
+    return ActionResult(items=[md_item, html_item], overwrite=True)
