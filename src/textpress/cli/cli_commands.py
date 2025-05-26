@@ -96,7 +96,7 @@ def format(md_path: Path | Url, add_classes: str | None = None) -> ActionResult:
     Input can be text, Markdown, or an HTML fragment. Result contains clean Markdown
     and HTML. Supports GFM-flavored Markdown tables and footnotes.
 
-    Uses `convert` todo the initial conversion.
+    Uses `convert` to do the conversion to clean Markdown.
     """
     from kash.exec import prepare_action_input
 
@@ -118,3 +118,19 @@ def publish(path: Path | Url, add_classes: str | None = None) -> ActionResult:
 
     input = prepare_action_input(path)
     return textpress_publish(input, add_classes=add_classes)
+
+
+def export(md_path: Path | Url) -> ActionResult:
+    """
+    Export a document as a clean docx file.
+
+    You can use this in Word or open the file in Google Docs.
+
+    Uses `convert` to do the conversion to clean Markdown.
+    """
+    from kash.exec import prepare_action_input
+
+    from textpress.actions.textpress_export import textpress_export
+
+    input = prepare_action_input(md_path)
+    return textpress_export(input)

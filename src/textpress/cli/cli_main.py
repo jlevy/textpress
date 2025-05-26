@@ -22,6 +22,7 @@ from textpress.api.textpress_api import get_user
 from textpress.api.textpress_env import get_api_config
 from textpress.cli.cli_commands import (
     convert,
+    export,
     files,
     format,
     paste,
@@ -35,9 +36,9 @@ DESCRIPTION = """Textpress: Simple publishing for complex docs"""
 
 DEFAULT_WORK_ROOT = Path("./textpress")
 
-ALL_COMMANDS = [setup, paste, files, convert, format, publish]
+ALL_COMMANDS = [setup, paste, files, convert, format, publish, export]
 
-ACTION_COMMANDS = [convert, format, publish]
+ACTION_COMMANDS = [convert, format, publish, export]
 
 
 def get_app_version() -> str:
@@ -97,6 +98,7 @@ def build_parser() -> argparse.ArgumentParser:
     # Parsers for each command.
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
 
+    # Add options for each command.
     for func in ALL_COMMANDS:
         subparser = subparsers.add_parser(
             func.__name__,
@@ -105,34 +107,13 @@ def build_parser() -> argparse.ArgumentParser:
             formatter_class=ReadableColorFormatter,
         )
         add_general_flags(subparser)
-        if func in {setup}:
-            subparser.add_argument(
-                "--show",
-                action="store_true",
-                help="show the current config and environment variables",
-            )
+
+        # Options for all actions:
         if func in ACTION_COMMANDS:
             add_action_flags(subparser)
             subparser.add_argument("input", type=str, help="Path or URL to the input file")
 
-        if func in {files}:
-            subparser.add_argument(
-                "--all",
-                action="store_true",
-                help="show hidden and ignored files",
-            )
-        if func in {paste}:
-            subparser.add_argument(
-                "--title",
-                type=str,
-                default="pasted_text",
-                help="Title for the imported item (default: pasted_text)",
-            )
-            subparser.add_argument(
-                "--plaintext",
-                action="store_true",
-                help="Treat input as plaintext instead of Markdown",
-            )
+        # Options for actions that produce HTML output:
         if func in {format, publish}:
             subparser.add_argument(
                 "--show",
@@ -144,6 +125,36 @@ def build_parser() -> argparse.ArgumentParser:
                 type=str,
                 default="",
                 help="Space-delimited classes to add to the body of the page.",
+            )
+
+        # `setup` options:
+        if func in {setup}:
+            subparser.add_argument(
+                "--show",
+                action="store_true",
+                help="show the current config and environment variables",
+            )
+
+        # `files` options:
+        if func in {files}:
+            subparser.add_argument(
+                "--all",
+                action="store_true",
+                help="show hidden and ignored files",
+            )
+
+        # `paste` options:
+        if func in {paste}:
+            subparser.add_argument(
+                "--title",
+                type=str,
+                default="pasted_text",
+                help="Title for the imported item (default: pasted_text)",
+            )
+            subparser.add_argument(
+                "--plaintext",
+                action="store_true",
+                help="Treat input as plaintext instead of Markdown",
             )
 
     return parser
@@ -291,6 +302,10 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                     published_urls.extend([md_url, html_url])
                     if args.show and _placehoder_username not in html_url:
                         webbrowser.open(html_url)
+                elif subcommand == export.__name__:
+                    result = export(input)
+                    assert result.items[0].store_path
+                    store_paths.append(Path(result.items[0].store_path))
                 else:
                     raise ValueError(f"Unknown subcommand: {args.subcommand}")
 
