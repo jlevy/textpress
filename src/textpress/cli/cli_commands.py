@@ -12,9 +12,25 @@ if TYPE_CHECKING:
     from kash.model import ActionResult
 
 
+def help() -> None:
+    """
+    Show additional help and example usage.
+    """
+    from clideps.ui.rich_output import print_heading
+    from kash.utils.rich_custom.rich_markdown_fork import Markdown
+    from rich import print as rprint
+
+    from textpress.cli.cli_docs import HELP_PAGE
+
+    print_heading(message="Using Textpress")
+
+    rprint()
+    rprint(Markdown(HELP_PAGE))
+
+
 def setup(show: bool = False) -> None:
     """
-    Run this first! Helps you log in and get an API key to use with Textpress.
+    Run this first! Set up your API key to use with Textpress.
 
     You can rerun this to get your API key again or use `--show` to confirm
     your setup. (If you prefer, you can instead set the `TEXPRESS_API_KEY`
@@ -76,7 +92,6 @@ def convert(md_path: Path | Url) -> ActionResult:
     This works well to convert docx files, especially Gemini Deep Research
     output: click to export a report to Google Docs, then select `File >
     Download > Microsoft Word (.docx)`.
-
     Uses MarkItDown/Mammoth/Markdownify and a few additional cleanups to
     convert docx files and flowmark for clean Markdown formatting.
     """
@@ -94,7 +109,6 @@ def format(md_path: Path | Url, add_classes: str | None = None) -> ActionResult:
 
     Input can be text, Markdown, or an HTML fragment. Result contains clean Markdown
     and HTML. Supports GFM-flavored Markdown tables and footnotes.
-
     Uses `convert` to do the conversion to clean Markdown.
     """
     from kash.exec import prepare_action_input
@@ -121,11 +135,9 @@ def publish(path: Path | Url, add_classes: str | None = None) -> ActionResult:
 
 def export(md_path: Path | Url) -> ActionResult:
     """
-    Export a document as a .pdf and clean .docx file.
+    Export a document as new, clean .pdf and .docx files.
 
-    You can use this in Word or open the file in Google Docs.
-
-    Uses `convert` to do the conversion to clean Markdown.
+    You can use the .docx file in Word or in Google Docs.
     """
     from kash.exec import prepare_action_input
 

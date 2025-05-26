@@ -41,7 +41,7 @@ dependencies = [
     "flowmark>=0.4.3",
     "kash-docs>=0.1.6",
     "rich>=14.0.0",
-    "clideps>=0.1.5"
+    "clideps>=0.1.6"
 ]
 
 
@@ -168,6 +168,7 @@ reportPrivateImportUsage = false
 # reportUnnecessaryIsInstance = false
 reportUnknownVariableType = false
 # reportUnknownArgumentType = false
+reportImportCycles = false
 
 [tool.codespell]
 # Add here as needed:

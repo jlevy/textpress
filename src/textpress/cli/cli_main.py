@@ -1,7 +1,9 @@
 """
-Convert, edit, and publish content in Textpress.
+The `textpress` (or `tp`) command lets you convert and format complex docs
+(like Deep Research reports) to and from clean Markdown as well as
+publish your content to Textpress.
 
-More information: https://github.com/jlevy/textpress
+For more information: https://textpress.md
 """
 
 import argparse
@@ -13,9 +15,10 @@ from textwrap import dedent
 from typing import Literal
 
 from clideps.env_vars.env_enum import MissingEnvVar
-from clideps.utils.readable_argparse import ReadableColorFormatter
+from clideps.utils.readable_argparse import ReadableColorFormatter, get_readable_console_width
 from kash.utils.common.url import Url, is_url
 from prettyfmt import fmt_path
+from rich import get_console
 from rich import print as rprint
 
 from textpress.api.textpress_api import get_user
@@ -25,6 +28,7 @@ from textpress.cli.cli_commands import (
     export,
     files,
     format,
+    help,
     paste,
     publish,
     setup,
@@ -34,9 +38,10 @@ APP_NAME = "textpress"
 
 DESCRIPTION = """Textpress: Simple publishing for complex docs"""
 
+
 DEFAULT_WORK_ROOT = Path("./textpress")
 
-ALL_COMMANDS = [setup, paste, files, convert, format, publish, export]
+ALL_COMMANDS = [help, setup, paste, files, convert, format, publish, export]
 
 ACTION_COMMANDS = [convert, format, publish, export]
 
@@ -339,6 +344,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
 
 
 def main() -> None:
+    get_console().width = get_readable_console_width()
     parser = build_parser()
     args = parser.parse_args()
 
@@ -347,6 +353,9 @@ def main() -> None:
 
     if subcommand == setup.__name__:
         setup(show=args.show)
+        return
+    elif subcommand == help.__name__:
+        help()
         return
 
     sys.exit(run_workspace_command(subcommand, args))

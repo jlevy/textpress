@@ -452,7 +452,7 @@ wheels = [
 
 [[package]]
 name = "clideps"
-version = "0.1.5"
+version = "0.1.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cachetools" },
@@ -466,9 +466,9 @@ dependencies = [
     { name = "rich-argparse" },
     { name = "strif" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/68/f0/be726755bb62124c90cbbda3cb02f81086ea0069015a219a413779fd70c3/clideps-0.1.5.tar.gz", hash = "sha256:950dfa1c91ec5bcf860cd808caf8f218d1bcf278f027842b5f123cc4b58cf280", size = 57739, upload-time = "2025-05-19T02:46:29.606Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c8/af/4ef7f02c7d9475065ed3597dc619e37d60168c5c70f9b582302be404eeb3/clideps-0.1.6.tar.gz", hash = "sha256:6f3382e640ffb019bf16628dd54fe615c365128aeba8b354f38c4ebd50c0c05d", size = 57824, upload-time = "2025-05-26T23:45:26.507Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/07/ade36f5643e176976bcd790f9be1f4fb99e31087fe1eea070df81fa80f2c/clideps-0.1.5-py3-none-any.whl", hash = "sha256:e6fea6e6d3e42662d880def6c778961cd7626d2985fbced14e4d0d943055462e", size = 37479, upload-time = "2025-05-19T02:46:28.026Z" },
+    { url = "https://files.pythonhosted.org/packages/79/5d/4f6ef0540050e47a7e5dca77911e27c02d9d37a1271762cdefc5a6311450/clideps-0.1.6-py3-none-any.whl", hash = "sha256:dea66c0f90bf3fcd052b3969cffe781b2e59918ff53492b4a91a8d29e6d74c05", size = 37570, upload-time = "2025-05-26T23:45:24.837Z" },
 ]
 
 [[package]]
@@ -2883,7 +2883,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "clideps", specifier = ">=0.1.5" },
+    { name = "clideps", specifier = ">=0.1.6" },
     { name = "flowmark", specifier = ">=0.4.3" },
     { name = "kash-docs", git = "https://github.com/jlevy/kash-docs.git" },
     { name = "rich", specifier = ">=14.0.0" },

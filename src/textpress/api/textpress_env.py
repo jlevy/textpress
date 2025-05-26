@@ -32,7 +32,7 @@ class ApiConfig:
 
     @override
     def __str__(self) -> str:
-        return f"api_key={abbrev_str(self.api_key, 8)}, api_root={self.api_root}, publish_root={self.publish_root}"
+        return f"api_key={abbrev_str(self.api_key, 10)}, api_root={self.api_root}, publish_root={self.publish_root}"
 
 
 def get_api_config() -> ApiConfig:
