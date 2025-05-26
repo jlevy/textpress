@@ -81,11 +81,10 @@ def convert(md_path: Path | Url) -> ActionResult:
     convert docx files and flowmark for clean Markdown formatting.
     """
     from kash.exec import prepare_action_input
-
-    from textpress.actions.textpress_convert import textpress_convert
+    from kash.kits.docs.actions.text.markdownify_doc import markdownify_doc
 
     input = prepare_action_input(md_path)
-    return textpress_convert(input)
+    return markdownify_doc(input)
 
 
 def format(md_path: Path | Url, add_classes: str | None = None) -> ActionResult:
@@ -122,7 +121,7 @@ def publish(path: Path | Url, add_classes: str | None = None) -> ActionResult:
 
 def export(md_path: Path | Url) -> ActionResult:
     """
-    Export a document as a clean docx file.
+    Export a document as a .pdf and clean .docx file.
 
     You can use this in Word or open the file in Google Docs.
 

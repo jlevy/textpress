@@ -7,6 +7,7 @@ from kash.exec.preconditions import (
     is_docx_resource,
     is_url_resource,
 )
+from kash.kits.docs.actions.text.markdownify_doc import markdownify_doc
 from kash.kits.docs.actions.text.minify_html import minify_html
 from kash.model import (
     ONE_ARG,
@@ -19,7 +20,6 @@ from kash.model import (
 )
 from prettyfmt import fmt_lines
 
-from textpress.actions.textpress_convert import textpress_convert
 from textpress.actions.textpress_render_template import textpress_render_template
 
 log = get_logger(__name__)
@@ -38,7 +38,7 @@ log = get_logger(__name__)
 def textpress_format(
     input: ActionInput, add_title: bool = False, add_classes: str | None = None
 ) -> ActionResult:
-    md_item = textpress_convert(input).items[0]
+    md_item = markdownify_doc(input).items[0]
 
     # Export the text item with original title or the heading if we can get it from the body.
     title = md_item.title or md_item.body_heading()

@@ -279,8 +279,8 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                 elif subcommand == format.__name__:
                     result = format(input, add_classes=clean_class_names(args.add_classes))
 
-                    md_item = next(item for item in result.items if item.format == Format.markdown)
-                    html_item = next(item for item in result.items if item.format == Format.html)
+                    md_item = result.get_by_format(Format.markdown)
+                    html_item = result.get_by_format(Format.html)
                     assert md_item.store_path and html_item.store_path
 
                     store_paths.extend([Path(md_item.store_path), Path(html_item.store_path)])
@@ -304,8 +304,12 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                         webbrowser.open(html_url)
                 elif subcommand == export.__name__:
                     result = export(input)
-                    assert result.items[0].store_path
-                    store_paths.append(Path(result.items[0].store_path))
+
+                    docx_item = result.get_by_format(Format.docx)
+                    pdf_item = result.get_by_format(Format.pdf)
+                    assert docx_item.store_path and pdf_item.store_path
+
+                    store_paths.extend([Path(docx_item.store_path), Path(pdf_item.store_path)])
                 else:
                     raise ValueError(f"Unknown subcommand: {args.subcommand}")
 
