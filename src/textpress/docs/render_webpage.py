@@ -21,5 +21,7 @@ def render_webpage(item: Item, add_title_h1: bool = False, add_classes: str | No
                 "add_classes": add_classes,
                 "content_html": item.body_as_html(),
                 "thumbnail_url": item.thumbnail_url,
+                "enable_themes": True,
+                "show_theme_toggle": False,
             },
         )

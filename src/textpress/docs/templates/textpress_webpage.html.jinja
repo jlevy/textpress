@@ -9,25 +9,32 @@
       letter-spacing: 0.03em;
     }
     .logo-black {
-      color: #000000;
+      color: var(--color-text);
+      transition: color 0.4s ease-in-out;
     }
     .logo-grey {
-      color: #A5A8A6;
+      color: hsl(140, 2%, 50%);
+      transition: color 0.4s ease-in-out;
     }
+    [data-theme="dark"] .logo-grey {
+      color: hsl(140, 2%, 58%);
+    }
+    
     .textpress-header {
       font-family: var(--font-sans);
       font-size: 1rem;
       background-color: var(--color-bg-alt);
       border-bottom: 1px solid var(--color-border-hint);
       transition: color 0.2s ease-in-out;
+      position: relative;
     }
     .textpress-main-nav {
-      color: hsl(140, 2%, 65%);
+      color: hsl(140, 2%, 50%);
       letter-spacing: 0.03em;
       font-size: var(--font-size-small);
     }
     .textpress-main-nav a {
-      color: var(--color-text-hint);
+      color: hsl(140, 2%, 50%);
     }
     .textpress-main-nav a:hover {
       text-decoration: none;
@@ -66,8 +73,36 @@
       color: hsl(0, 18%, 39%);
     }
 
+    /* Override theme toggle positioning for textpress header */
+    .textpress-header .theme-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 1.6rem;
+      transform: translateY(-50%);
+      /* Reset the fixed positioning from base styles */
+      position: absolute !important;
+      width: 2rem;
+      height: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .textpress-header .theme-toggle svg {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+
+    /* Only add padding when screen is narrow enough for overlap to occur */
+    @media (max-width: 820px) {
+      .textpress-main-nav {
+        padding-right: 2.5rem;
+      }
+    }
   </style>
 {% endblock head_extra %}
+
+{% block theme_toggle %}
+  {# Hide the default theme toggle from base template #}
+{% endblock theme_toggle %}
 
 {% block body_header %}
   <header class="textpress-header">
@@ -91,6 +126,10 @@
           <a href="https://github.com/jlevy/textpress">GitHub</a>
         </div>
       </nav>
+      {# Theme toggle button positioned at far right - using same class as base template #}
+      <button class="theme-toggle" aria-label="toggle dark mode">
+        <i data-feather="moon"></i>
+      </button>
     </div>
   </header>
 {% endblock body_header %}
