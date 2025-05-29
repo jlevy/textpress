@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import logging
 from datetime import datetime
 from enum import Enum
@@ -212,10 +213,13 @@ def sync_commit(
 
     uploads_metadata: list[UploadFileMetadata] = []
     for info in uploaded_files_details:
+        # Convert base64 Content-MD5 back to hex to match presign format
+        md5_hex = base64.b64decode(info.headers["Content-MD5"]).hex()
+
         uploads_metadata.append(
             UploadFileMetadata(
                 path=info.path,
-                md5=info.headers["Content-MD5"],
+                md5=md5_hex,
                 contentType=info.headers["Content-Type"],
             )
         )
