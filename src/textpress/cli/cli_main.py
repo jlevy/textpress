@@ -50,7 +50,7 @@ def get_app_version() -> str:
     try:
         return "v" + version(APP_NAME)
     except Exception:
-        return "unknown"
+        return "(unknown version)"
 
 
 def add_general_flags(parser: argparse.ArgumentParser) -> None:
