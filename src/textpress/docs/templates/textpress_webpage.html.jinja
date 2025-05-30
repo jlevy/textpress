@@ -1,103 +1,167 @@
 {% extends "simple_webpage.html.jinja" %}
 
 {% block head_extra %}
-  <style>
-    .textpress-logo {
-      font-family: "PT Serif", serif;
-      font-size: 1.3rem;
-      display: flex;
-      letter-spacing: 0.03em;
-    }
-    .logo-black {
-      color: var(--color-text);
-      transition: color 0.4s ease-in-out;
-    }
-    .logo-grey {
-      color: hsl(140, 2%, 50%);
-      transition: color 0.4s ease-in-out;
-    }
-    [data-theme="dark"] .logo-grey {
-      color: hsl(140, 2%, 58%);
+{{ super() }}
+<!-- textpress_webpage begin head_extra block -->
+<style>
+  .textpress-logo {
+    font-family: "PT Serif", serif;
+    font-size: 1.3rem;
+    display: flex;
+    letter-spacing: 0.03em;
+  }
+  .logo-black {
+    color: var(--color-text);
+    transition: color 0.4s ease-in-out;
+  }
+  .logo-grey {
+    color: hsl(140, 2%, 50%);
+    transition: color 0.4s ease-in-out;
+  }
+  [data-theme="dark"] .logo-grey {
+    color: hsl(140, 2%, 58%);
+  }
+  
+  .textpress-header {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    background-color: var(--color-bg-alt);
+    border-bottom: 1px solid var(--color-border-hint);
+    transition: background 0.4s ease-in-out, color 0.4s ease-in-out;
+    position: relative;
+  }
+
+  /* Default header layout - centered max-width */
+  .textpress-header .header-content {
+    max-width: 48rem; /* Match content max-width */
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.5rem 1.5rem;
+    width: 100%;
+  }
+
+  /* Desktop TOC-aware header layout */
+  @media (min-width: {{ toc_breakpoint | default(1200) }}px) {
+    body.page-has-toc .textpress-header {
+      /* Apply same grid as content when TOC is present */
+      display: grid;
+      grid-template-columns: calc(var(--toc-width, 16rem) + 4rem) 1fr;
     }
     
-    .textpress-header {
-      font-family: var(--font-sans);
-      font-size: 1rem;
-      background-color: var(--color-bg-alt);
-      border-bottom: 1px solid var(--color-border-hint);
-      transition: color 0.2s ease-in-out;
-      position: relative;
+    body.page-has-toc .textpress-header .header-content {
+      grid-column: 2;
+      max-width: 48rem; 
+      margin: 0 auto; 
+      padding: 0.5rem 0.5rem; 
+      display: flex; 
+      justify-content: space-between;
+      align-items: baseline;
     }
+  }
+
+  .textpress-main-nav {
+    color: hsl(140, 2%, 50%);
+    letter-spacing: 0.03em;
+    font-size: var(--font-size-small);
+  }
+  .textpress-main-nav a {
+    color: hsl(140, 2%, 50%);
+  }
+  .textpress-main-nav a:hover {
+    text-decoration: none;
+    color: var(--color-primary-light);
+  }
+  /* Ensure logo link doesn't change color or get underlined on hover */
+  .textpress-logo:hover {
+    text-decoration: none;
+  }
+  .textpress-footer {
+    font-family: var(--font-sans);
+    color: var(--color-text-hint);
+    font-size: var(--font-size-small);
+  }
+
+  /* Default footer layout - centered max-width */
+  .textpress-footer .footer-content {
+    max-width: 48rem; /* Match content max-width */
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem;
+    text-align: center;
+  }
+
+  /* Desktop TOC-aware footer layout */
+  @media (min-width: {{ toc_breakpoint | default(1200) }}px) {
+    body.page-has-toc .textpress-footer {
+      /* Apply same grid as content when TOC is present */
+      display: grid;
+      grid-template-columns: calc(var(--toc-width, 16rem) + 4rem) 1fr;
+    }
+    
+    body.page-has-toc .textpress-footer .footer-content {
+      /* Footer content goes in the second grid column, aligned with main text */
+      grid-column: 2;
+      max-width: 48rem; /* Keep same width as main content */
+      margin: 0 auto; /* Center within the grid column to align with main text */
+      padding: 1.5rem 1.5rem; /* Keep the padding for edge spacing */
+      text-align: center; /* Keep center alignment for the footer text */
+    }
+  }
+
+  .boxed-text {
+    border: 1px solid hsl(140, 2%, 34%);
+    padding: 0.2rem 1.2rem;
+    border-radius: 4px;
+    margin: 2rem 0;
+  }
+  .centered-headers h1,
+  .centered-headers h2,
+  .centered-headers h3 {
+    text-align: center;
+  }
+  .get-started {
+    border: 1px solid hsl(140, 2%, 0%);
+    background-color: var(--color-bg-alt);
+  }
+  .justify p {
+    text-align: justify;
+    text-align-last: left;
+  }
+  .textpress-main-content pre,
+  .textpress-main-content code {
+    color: hsl(0, 22%, 28%);
+    font-weight: 700;
+  }
+
+  /* Override theme toggle positioning for textpress header */
+  .textpress-header .theme-toggle {
+    position: absolute;
+    color: var(--color-hint);
+    background-color: transparent;
+    right: 1rem;
+    top: 1.6rem;
+    transform: translateY(-50%);
+    /* Reset the fixed positioning from base styles */
+    position: absolute !important;
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.9rem;
+  }
+
+  .textpress-header .theme-toggle svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  /* Only add padding when screen is narrow enough for overlap to occur */
+  @media (max-width: 820px) {
     .textpress-main-nav {
-      color: hsl(140, 2%, 50%);
-      letter-spacing: 0.03em;
-      font-size: var(--font-size-small);
+      padding-right: 2.5rem;
     }
-    .textpress-main-nav a {
-      color: hsl(140, 2%, 50%);
-    }
-    .textpress-main-nav a:hover {
-      text-decoration: none;
-      color: var(--color-primary-light);
-    }
-    /* Ensure logo link doesn't change color or get underlined on hover */
-    .textpress-logo:hover {
-      text-decoration: none;
-    }
-    .textpress-footer {
-      font-family: var(--font-sans);
-      color: var(--color-text-hint);
-      font-size: var(--font-size-small);
-    }
-    .boxed-text {
-      border: 1px solid hsl(140, 2%, 34%);
-      padding: 0.2rem 1.2rem;
-      border-radius: 4px;
-      margin: 2rem 0;
-    }
-    .centered-headers h1,
-    .centered-headers h2,
-    .centered-headers h3 {
-      text-align: center;
-    }
-    .get-started {
-      border: 1px solid hsl(140, 2%, 0%);
-      background-color: var(--color-bg-alt);
-    }
-    .justify p {
-      text-align: justify;
-      text-align-last: left;
-    }
-    .textpress-main-content pre,
-    .textpress-main-content code {
-      color: hsl(0, 18%, 39%);
-    }
-
-    /* Override theme toggle positioning for textpress header */
-    .textpress-header .theme-toggle {
-      position: absolute;
-      right: 1rem;
-      top: 1.6rem;
-      transform: translateY(-50%);
-      /* Reset the fixed positioning from base styles */
-      position: absolute !important;
-      width: 2rem;
-      height: 2rem;
-      font-size: 0.9rem;
-    }
-
-    .textpress-header .theme-toggle svg {
-      width: 0.9rem;
-      height: 0.9rem;
-    }
-
-    /* Only add padding when screen is narrow enough for overlap to occur */
-    @media (max-width: 820px) {
-      .textpress-main-nav {
-        padding-right: 2.5rem;
-      }
-    }
-  </style>
+  }
+</style>
+<!-- textpress_webpage end head_extra block -->
 {% endblock head_extra %}
 
 {% block theme_toggle %}
@@ -106,7 +170,7 @@
 
 {% block body_header %}
   <header class="textpress-header">
-    <div class="max-w-3xl mx-auto flex justify-between items-baseline px-6 py-2">
+    <div class="header-content">
       <a href="https://textpress.md/" class="textpress-logo">
         <div class="flex">
           <span class="logo-black">T</span>
@@ -127,7 +191,7 @@
         </div>
       </nav>
       {# Theme toggle button positioned at far right - using same class as base template #}
-      <button class="theme-toggle" aria-label="toggle dark mode">
+      <button class="button theme-toggle" aria-label="toggle dark mode">
         <i data-feather="moon"></i>
       </button>
     </div>
@@ -142,14 +206,43 @@
 
 {% block body_footer %}
   {# Align footer with body content #}
-  <footer class="textpress-footer container max-w-3xl mx-auto px-6 py-6 text-center">
-    <p>
-      Published on <a href="https://textpress.md/">Textpress</a>
-      <br/>
-      <a href="https://textpress.md/textpress/d/privacy.html">Privacy</a>
-      &nbsp;•&nbsp;
-      <a href="https://textpress.md/textpress/d/tos.html">Terms of Service</a>
-    </p>
+  <footer class="textpress-footer">
+    <div class="footer-content">
+      <p>
+        Published on <a href="https://textpress.md/">Textpress</a>
+        <br/>
+        <a href="https://textpress.md/textpress/d/privacy.html">Privacy</a>
+        &nbsp;•&nbsp;
+        <a href="https://textpress.md/textpress/d/tos.html">Terms of Service</a>
+      </p>
+    </div>
   </footer>
 {% endblock body_footer %}
+
+{% block scripts_extra %}
+{{ super() }}
+<!-- textpress_webpage begin scripts_extra block -->
+<script>
+// Extend the TOC functionality to make textpress header/footer TOC-aware
+document.addEventListener('DOMContentLoaded', () => {
+  // Add a small delay to ensure the parent TOC logic has run
+  setTimeout(() => {
+    const contentContainer = document.getElementById('content-container');
+    const body = document.body;
+    
+    if (contentContainer && contentContainer.classList.contains('has-toc')) {
+      // Apply TOC class to body so header and footer can respond
+      body.classList.add('textpress-page', 'has-toc');
+      console.info("Textpress: TOC layout applied to header and footer");
+    } else {
+      // Ensure we're using the default layout
+      body.classList.add('textpress-page');
+      body.classList.remove('has-toc');
+      console.info("Textpress: Default layout applied to header and footer");
+    }
+  }, 150); // Slightly longer delay than the parent TOC init (100ms)
+});
+</script>
+<!-- textpress_webpage end scripts_extra block -->
+{% endblock scripts_extra %}
 

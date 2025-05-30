@@ -46,7 +46,9 @@ def textpress_format(
 
     raw_html_item = textpress_render_template(md_item, add_title=add_title, add_classes=add_classes)
 
-    minified_item = minify_html(raw_html_item)
+    # Disabling JS minification for now.
+    # https://github.com/wilsonzlin/minify-html/issues/236
+    minified_item = minify_html(raw_html_item, no_js_min=True)
 
     # Put the final formatted result as an export with the same title as the original.
     html_item = raw_html_item.derived_copy(
