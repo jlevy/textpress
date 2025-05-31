@@ -51,13 +51,33 @@
     }
     
     body.page-has-toc .textpress-header .header-content {
-      grid-column: 2;
-      max-width: 48rem; 
-      margin: 0 auto; 
-      padding: 0.5rem 0.5rem; 
-      display: flex; 
-      justify-content: space-between;
+      grid-column: 1 / -1;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
       align-items: baseline;
+    }
+    
+    body.page-has-toc .textpress-header .textpress-logo {
+      width: calc(var(--toc-width, 16rem) + 4rem);
+      padding: 0.5rem 0 0.5rem 2rem; /* Align with TOC margin */
+      flex-shrink: 0;
+    }
+    
+    body.page-has-toc .textpress-header .textpress-main-nav {
+      flex-grow: 1;
+      padding: 0.5rem 0 0.5rem 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: baseline;
+      margin-right: 4.5rem; /* Room for theme toggle */
+    }
+  }
+
+  @media (max-width: 820px) {
+    .textpress-main-nav {
+      margin-right: 2.5rem; /* Room for theme toggle */
     }
   }
 
@@ -154,12 +174,7 @@
     height: 0.9rem;
   }
 
-  /* Only add padding when screen is narrow enough for overlap to occur */
-  @media (max-width: 820px) {
-    .textpress-main-nav {
-      padding-right: 2.5rem;
-    }
-  }
+
 </style>
 <!-- textpress_webpage end head_extra block -->
 {% endblock head_extra %}
