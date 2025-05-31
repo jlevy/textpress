@@ -1158,8 +1158,8 @@ wheels = [
 
 [[package]]
 name = "kash-docs"
-version = "0.1.8.dev3+5f2327e"
-source = { git = "https://github.com/jlevy/kash-docs.git#5f2327e8ae1df8060a3383b1a196bda4256950e9" }
+version = "0.1.8.dev3+6427fae"
+source = { git = "https://github.com/jlevy/kash-docs.git#6427fae7a5d41e85532ad278250536e5b6257d50" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "boto3" },
@@ -1185,8 +1185,8 @@ dependencies = [
 
 [[package]]
 name = "kash-shell"
-version = "0.3.17.dev9+e438e34"
-source = { git = "https://github.com/jlevy/kash.git#e438e344e3692d3aab4b5efcd571442aaeaec9c5" }
+version = "0.3.17.dev10+d10ce48"
+source = { git = "https://github.com/jlevy/kash.git#d10ce486e04d525fcca55500de53e5c2c1e4faa5" }
 dependencies = [
     { name = "anyio" },
     { name = "audioop-lts", marker = "python_full_version >= '3.13'" },

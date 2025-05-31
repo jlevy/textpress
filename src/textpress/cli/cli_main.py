@@ -35,6 +35,7 @@ from textpress.cli.cli_commands import (
 )
 
 APP_NAME = "textpress"
+KASH_NAME = "kash-shell"
 
 DESCRIPTION = """Textpress: Simple publishing for complex docs"""
 
@@ -46,9 +47,11 @@ ALL_COMMANDS = [help, setup, paste, files, convert, format, publish, export]
 ACTION_COMMANDS = [convert, format, publish, export]
 
 
-def get_app_version() -> str:
+def get_version_name() -> str:
     try:
-        return "v" + version(APP_NAME)
+        textpress_version = version(APP_NAME)
+        kash_version = version(KASH_NAME)
+        return f"{APP_NAME} v{textpress_version} ({KASH_NAME} v{kash_version})"
     except Exception:
         return "(unknown version)"
 
@@ -85,10 +88,10 @@ def add_action_flags(parser: argparse.ArgumentParser) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         formatter_class=ReadableColorFormatter,
-        epilog=dedent((__doc__ or "") + "\n\n" + f"{APP_NAME} {get_app_version()}"),
+        epilog=dedent((__doc__ or "") + "\n\n" + get_version_name()),
         description=DESCRIPTION,
     )
-    parser.add_argument("--version", action="version", version=f"{APP_NAME} {get_app_version()}")
+    parser.add_argument("--version", action="version", version=get_version_name())
 
     # Common arguments for all actions.
     parser.add_argument(
