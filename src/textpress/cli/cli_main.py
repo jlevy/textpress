@@ -284,7 +284,7 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                 elif subcommand == format.__name__:
                     result = format(input, add_classes=clean_class_names(args.add_classes))
 
-                    md_item = result.get_by_format(Format.markdown)
+                    md_item = result.get_by_format(Format.markdown, Format.md_html)
                     html_item = result.get_by_format(Format.html)
                     assert md_item.store_path and html_item.store_path
 
@@ -296,8 +296,8 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                 elif subcommand == publish.__name__:
                     result = publish(input, add_classes=clean_class_names(args.add_classes))
 
-                    md_item = next(item for item in result.items if item.format == Format.markdown)
-                    html_item = next(item for item in result.items if item.format == Format.html)
+                    md_item = result.get_by_format(Format.markdown, Format.md_html)
+                    html_item = result.get_by_format(Format.html)
                     assert md_item.store_path and html_item.store_path
 
                     md_url = public_url_for(ws_path / Path(md_item.store_path).name)
@@ -332,13 +332,18 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
             log.error("HTTP error: status %s: %s", e.response.status_code, e.request.url)
             rprint()
             return 1
+        except KeyboardInterrupt:
+            rprint()
+            log.warning("[yellow]Cancelled[/yellow]")
+            rprint()
+            return 130
         except Exception as e:
             rprint()
-            log.error("Error running action: %s: %s", subcommand, e)
+            log.error("Error running action: %s: %s: %s", subcommand, e.__class__.__name__, e)
             log.info("Error details", exc_info=e)
             log_file = get_log_settings().log_file_path
             rprint(f"[bright_black]See logs for more details: {fmt_path(log_file)}[/bright_black]")
-            return 1
+            return 2
 
     return 0
 

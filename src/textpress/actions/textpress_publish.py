@@ -40,8 +40,8 @@ def textpress_publish(
 ) -> ActionResult:
     item = input.items[0]
     format_result = textpress_format(input, add_title=add_title, add_classes=add_classes)
-    md_item = next(item for item in format_result.items if item.format and item.format.is_markdown)
-    html_item = next(item for item in format_result.items if item.format == Format.html)
+    md_item = format_result.get_by_format(Format.markdown, Format.md_html)
+    html_item = format_result.get_by_format(Format.html)
 
     upload_paths = [md_item.absolute_path(), html_item.absolute_path()]
     log.message("Publishing files:\n%s", fmt_lines(upload_paths))
