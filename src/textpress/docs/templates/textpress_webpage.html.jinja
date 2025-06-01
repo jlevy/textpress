@@ -10,6 +10,10 @@
     display: flex;
     letter-spacing: 0.03em;
   }
+  .textpress-logo:hover {
+    text-decoration: none;
+    color: var(--color-primary) !important;
+  }
   .logo-black {
     color: var(--color-text);
     transition: color 0.4s ease-in-out;
@@ -88,15 +92,24 @@
   }
   .textpress-main-nav a {
     color: hsl(140, 2%, 50%);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
   }
   .textpress-main-nav a:hover {
     text-decoration: none;
-    color: var(--color-primary-light);
+    color: var(--color-primary);
   }
-  /* Ensure logo link doesn't change color or get underlined on hover */
-  .textpress-logo:hover {
-    text-decoration: none;
+  .textpress-main-nav a:hover svg {
+    color: var(--color-primary);
   }
+  .textpress-main-nav svg {
+    width: 0.85rem;
+    height: 0.85rem;
+    color: inherit;
+    transition: color 0.15s ease-in-out;
+  }
+
   .textpress-footer {
     font-family: var(--font-sans);
     color: var(--color-text-hint);
@@ -134,6 +147,9 @@
     padding: 0.2rem 1.2rem;
     border-radius: 4px;
     margin: 2rem 0;
+  }
+  .shaded-text {
+    background-color: var(--color-bg-alt);
   }
   .centered-headers h1,
   .centered-headers h2,
@@ -194,8 +210,14 @@
       </a>
       <nav class="textpress-main-nav flex items-center flex-grow ml-2">
         <div class="ml-auto flex">
-          <a href="https://textpress.md/#get-started" class="mr-4">Try Textpress</a>
-          <a href="https://github.com/jlevy/textpress">GitHub</a>
+          <a href="https://textpress.md/#get-started" class="mr-4">
+            <i data-feather="terminal"></i>
+            Try Textpress
+          </a>
+          <a href="https://github.com/jlevy/textpress">
+            <i data-feather="github"></i>
+            GitHub
+          </a>
         </div>
       </nav>
       {# Theme toggle button positioned at far right - using same class as base template #}

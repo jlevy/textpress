@@ -35,7 +35,8 @@ from textpress.cli.cli_commands import (
 )
 
 APP_NAME = "textpress"
-KASH_NAME = "kash-shell"
+KASH_SHELL = "kash-shell"
+KASH_DOCS = "kash-docs"
 
 DESCRIPTION = """Textpress: Simple publishing for complex docs"""
 
@@ -50,8 +51,9 @@ ACTION_COMMANDS = [convert, format, publish, export]
 def get_version_name() -> str:
     try:
         textpress_version = version(APP_NAME)
-        kash_version = version(KASH_NAME)
-        return f"{APP_NAME} v{textpress_version} ({KASH_NAME} v{kash_version})"
+        kash_version = version(KASH_SHELL)
+        kash_docs_version = version(KASH_DOCS)
+        return f"{APP_NAME} v{textpress_version} ({KASH_SHELL} v{kash_version}, {KASH_DOCS} v{kash_docs_version})"
     except Exception:
         return "(unknown version)"
 
