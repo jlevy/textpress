@@ -1,3 +1,4 @@
+import re
 import sys
 import webbrowser
 from pathlib import Path
@@ -36,8 +37,20 @@ def _env_config_path() -> Path:
     return Path.home() / ".config" / "textpress" / "env"
 
 
-def _validate_api_key(api_key: str) -> bool:
-    return bool(api_key and len(api_key.strip()) > 5 and api_key.strip().startswith("tp"))
+def _validate_api_key(api_key: str) -> bool | str:
+    """
+    Validate API key format: tp_ followed by 32 hexadecimal characters.
+    """
+    api_key = api_key.strip()
+    if not api_key:
+        return False
+    if re.match(r"^tp_[a-fA-F0-9]*$", api_key) and len(api_key) != 32 + 3:
+        return "The API isn't the expected length. It should look something like: tp_1234567890abcdef1234567890abcdef"
+
+    if not re.match(r"^tp_[a-fA-F0-9]{32}$", api_key):
+        return "The API key doesn't look right. It should look something like: tp_1234567890abcdef1234567890abcdef"
+
+    return True
 
 
 def read_env_vars(verbose: bool = False) -> bool:

@@ -41,7 +41,7 @@ dependencies = [
     "kash-docs>=0.1.8",
     "flowmark>=0.4.6",
     "rich>=14.0.0",
-    "clideps>=0.1.6"
+    "clideps>=0.1.7",
 ]
 
 
@@ -66,7 +66,7 @@ tp = "textpress.cli.cli_main:main"
 
 [tool.uv.sources]
 # For bleeding edge:
-# kash-docs = { git = "https://github.com/jlevy/kash-docs.git" }
+kash-docs = { git = "https://github.com/jlevy/kash-docs.git" }
 # For local development:
 # kash-docs = { path = "../kash-docs", editable = true }
 # clideps = { path = "../clideps", editable = true }
