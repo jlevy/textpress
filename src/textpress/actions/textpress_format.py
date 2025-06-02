@@ -5,6 +5,7 @@ from kash.exec.preconditions import (
     has_html_body,
     has_simple_text_body,
     is_docx_resource,
+    is_pdf_resource,
     is_url_resource,
 )
 from kash.kits.docs.actions.text.markdownify_doc import markdownify_doc
@@ -28,7 +29,9 @@ log = get_logger(__name__)
 @kash_action(
     expected_args=ONE_ARG,
     expected_outputs=TWO_ARGS,
-    precondition=(is_url_resource | is_docx_resource | has_html_body | has_simple_text_body)
+    precondition=(
+        is_url_resource | is_docx_resource | is_pdf_resource | has_html_body | has_simple_text_body
+    )
     & ~has_fullpage_html_body,
     params=(
         Param("add_title", "Add a title to the page body.", type=bool),
@@ -59,6 +62,10 @@ def textpress_format(
     )
 
     log.message("Formatted HTML item from text item:\n%s", fmt_lines([md_item, html_item]))
+    if is_pdf_resource(input.items[0]):
+        log.warning(
+            "Converting from PDF to Markdown is not as reliable as from HTML or .docx. Check the output to confirm its quality!"
+        )
 
     # Setting overwrite means we'll always pick the same output paths and
     # both .html and .md filenames will match.

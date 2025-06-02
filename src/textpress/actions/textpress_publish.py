@@ -4,6 +4,7 @@ from kash.exec.preconditions import (
     has_html_body,
     has_simple_text_body,
     is_docx_resource,
+    is_pdf_resource,
     is_url_resource,
 )
 from kash.exec_model.args_model import TWO_ARGS
@@ -28,7 +29,9 @@ log = get_logger(__name__)
 @kash_action(
     expected_args=ONE_ARG,
     expected_outputs=TWO_ARGS,
-    precondition=is_url_resource | is_docx_resource | has_html_body | has_simple_text_body,
+    precondition=(
+        is_url_resource | is_docx_resource | is_pdf_resource | has_html_body | has_simple_text_body
+    ),
     params=(
         Param("add_title", "Add the document title to the page body.", type=bool),
         Param("add_classes", "Space-delimited classes to add to the body of the page.", type=str),
