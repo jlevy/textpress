@@ -197,6 +197,14 @@
     <div class="header-content">
       <a href="https://textpress.md/" class="textpress-logo">
         <div class="flex">
+          <svg width="18" height="18" viewBox="0 2.8 10 16" fill="none" stroke="currentColor" stroke-width="1.72" stroke-linecap="butt" stroke-linejoin="miter" class="logo-black" style="align-self: center;">
+            <defs>
+              <clipPath id="crop-chevron">
+                <rect height="14" width="7.3" x="4.6" y="4"></rect>
+              </clipPath>
+            </defs>
+            <polyline points="4 18 11 11 4 4" clip-path="url(#crop-chevron)"></polyline>
+          </svg>
           <span class="logo-black">T</span>
           <span class="logo-grey">E</span>
           <span class="logo-grey">X</span>
@@ -211,7 +219,6 @@
       <nav class="textpress-main-nav flex items-center flex-grow ml-2">
         <div class="ml-auto flex">
           <a href="https://textpress.md/#get-started" class="mr-4">
-            <i data-feather="terminal"></i>
             Try Textpress
           </a>
           <a href="https://github.com/jlevy/textpress">
@@ -222,7 +229,7 @@
       </nav>
       {# Theme toggle button positioned at far right - using same class as base template #}
       <button class="button theme-toggle" aria-label="toggle dark mode">
-        <i data-feather="moon"></i>
+        <i class="logo-gray" data-feather="moon"></i>
       </button>
     </div>
   </header>
