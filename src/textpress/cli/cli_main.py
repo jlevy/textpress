@@ -123,6 +123,14 @@ def build_parser() -> argparse.ArgumentParser:
             add_action_flags(subparser)
             subparser.add_argument("input", type=str, help="Path or URL to the input file")
 
+        # Options for convert command:
+        if func in {convert}:
+            subparser.add_argument(
+                "--show",
+                action="store_true",
+                help="after it is complete, show the result in the console with a pager",
+            )
+
         # Options for actions that produce HTML output:
         if func in {format, publish}:
             subparser.add_argument(
@@ -238,6 +246,7 @@ def clean_class_names(classes_str: str) -> str:
 def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
     # Lazy imports! Can be slow so only do for processing commands.
     import httpx
+    from kash.commands.base.show_command import show
     from kash.config.logger import CustomLogger, get_log_settings, get_logger
     from kash.config.setup import kash_setup
     from kash.exec import kash_runtime
@@ -286,6 +295,10 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                     result = convert(input)
                     assert result.items[0].store_path
                     store_paths.append(Path(result.items[0].store_path))
+
+                    if args.show:
+                        # Show the converted file using kash show command
+                        show(str(ws_path / Path(result.items[0].store_path)), console=True)
                 elif subcommand == format.__name__:
                     result = format(input, add_classes=clean_class_names(args.add_classes))
 
