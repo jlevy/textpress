@@ -6,9 +6,10 @@
 <style>
   .textpress-logo {
     font-family: "PT Serif", serif;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     display: flex;
     letter-spacing: 0.03em;
+    line-height: 1;
   }
   .textpress-logo:hover {
     text-decoration: none;
@@ -41,8 +42,8 @@
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    padding: 0.5rem 1.5rem;
+    align-items: center;
+    padding: 0.3rem 1.5rem;
     width: 100%;
   }
 
@@ -60,7 +61,7 @@
       margin: 0;
       padding: 0;
       display: flex;
-      align-items: baseline;
+      align-items: center;
     }
     
     body.page-has-toc .textpress-header .textpress-logo {
@@ -74,7 +75,7 @@
       padding: 0.5rem 0 0.5rem 0;
       display: flex;
       justify-content: flex-end;
-      align-items: baseline;
+      align-items: center;
       margin-right: 4.5rem; /* Room for theme toggle */
     }
   }
@@ -95,6 +96,7 @@
     display: flex;
     align-items: center;
     gap: 0.3rem;
+    white-space: nowrap; /* Prevent text wrapping */
   }
   .textpress-main-nav a:hover {
     text-decoration: none;
@@ -188,7 +190,7 @@
     color: var(--color-hint);
     background-color: transparent;
     right: 1rem;
-    top: 1.6rem;
+    top: 50%;
     transform: translateY(-50%);
     /* Reset the fixed positioning from base styles */
     position: absolute !important;
@@ -214,7 +216,7 @@
     <div class="header-content">
       <a href="https://textpress.md/" class="textpress-logo">
         <div class="flex">
-          <svg width="18" height="18" viewBox="0 2.8 10 16" fill="none" stroke="currentColor" stroke-width="1.72" stroke-linecap="butt" stroke-linejoin="miter" class="logo-black" style="align-self: center;">
+          <svg width="16" height="16" viewBox="0 2.8 10 15.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="butt" stroke-linejoin="miter" class="logo-black" style="align-self: center;">
             <defs>
               <clipPath id="crop-chevron">
                 <rect height="14" width="7.3" x="4.6" y="4"></rect>
