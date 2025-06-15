@@ -24,7 +24,7 @@
     transition: color 0.4s ease-in-out;
   }
   [data-theme="dark"] .logo-grey {
-    color: hsl(140, 2%, 58%);
+    color: hsl(140, 2%, 62%);
   }
   
   .textpress-header {
@@ -43,7 +43,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.3rem 1.5rem;
+    padding: 0.5rem 1.5rem;
     width: 100%;
   }
 
@@ -118,30 +118,12 @@
     font-size: var(--font-size-small);
   }
 
-  /* Default footer layout - centered max-width */
+  /* Footer should always be centered below content */
   .textpress-footer .footer-content {
     max-width: 48rem; /* Match content max-width */
     margin: 0 auto;
     padding: 1.5rem 1.5rem;
     text-align: center;
-  }
-
-  /* Desktop TOC-aware footer layout */
-  @media (min-width: {{ toc_breakpoint | default(1200) }}px) {
-    body.page-has-toc .textpress-footer {
-      /* Apply same grid as content when TOC is present */
-      display: grid;
-      grid-template-columns: calc(var(--toc-width, 16rem) + 4rem) 1fr;
-    }
-    
-    body.page-has-toc .textpress-footer .footer-content {
-      /* Footer content goes in the second grid column, aligned with main text */
-      grid-column: 2;
-      max-width: 48rem; /* Keep same width as main content */
-      margin: 0 auto; /* Center within the grid column to align with main text */
-      padding: 1.5rem 1.5rem; /* Keep the padding for edge spacing */
-      text-align: center; /* Keep center alignment for the footer text */
-    }
   }
 
   .content .sans-text .hero h1 {
