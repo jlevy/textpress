@@ -144,6 +144,11 @@ def build_parser() -> argparse.ArgumentParser:
                 default="",
                 help="Space-delimited classes to add to the body of the page.",
             )
+            subparser.add_argument(
+                "--no_minify",
+                action="store_true",
+                help="Skip HTML/CSS/JS/Tailwind minification step.",
+            )
 
         # `setup` options:
         if func in {setup}:
@@ -300,7 +305,11 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                         # Show the converted file using kash show command
                         show(str(ws_path / Path(result.items[0].store_path)), console=True)
                 elif subcommand == format.__name__:
-                    result = format(input, add_classes=clean_class_names(args.add_classes))
+                    result = format(
+                        input,
+                        add_classes=clean_class_names(args.add_classes),
+                        no_minify=args.no_minify,
+                    )
 
                     md_item = result.get_by_format(Format.markdown, Format.md_html)
                     html_item = result.get_by_format(Format.html)
@@ -312,7 +321,11 @@ def run_workspace_command(subcommand: str, args: argparse.Namespace) -> int:
                     if args.show:
                         open_url(local_url)
                 elif subcommand == publish.__name__:
-                    result = publish(input, add_classes=clean_class_names(args.add_classes))
+                    result = publish(
+                        input,
+                        add_classes=clean_class_names(args.add_classes),
+                        no_minify=args.no_minify,
+                    )
 
                     md_item = result.get_by_format(Format.markdown, Format.md_html)
                     html_item = result.get_by_format(Format.html)

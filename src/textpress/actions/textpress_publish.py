@@ -35,14 +35,20 @@ log = get_logger(__name__)
     params=(
         Param("add_title", "Add the document title to the page body.", type=bool),
         Param("add_classes", "Space-delimited classes to add to the body of the page.", type=str),
+        Param("no_minify", "Skip HTML/CSS/JS/Tailwind minification step.", type=bool),
     ),
     cacheable=False,
 )
 def textpress_publish(
-    input: ActionInput, add_title: bool = False, add_classes: str | None = None
+    input: ActionInput,
+    add_title: bool = False,
+    add_classes: str | None = None,
+    no_minify: bool = False,
 ) -> ActionResult:
     item = input.items[0]
-    format_result = textpress_format(input, add_title=add_title, add_classes=add_classes)
+    format_result = textpress_format(
+        input, add_title=add_title, add_classes=add_classes, no_minify=no_minify
+    )
     md_item = format_result.get_by_format(Format.markdown, Format.md_html)
     html_item = format_result.get_by_format(Format.html)
 

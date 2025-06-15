@@ -1,3 +1,4 @@
+from kash.actions.core.minify_html import minify_html
 from kash.config.logger import get_logger
 from kash.exec import kash_action
 from kash.exec.preconditions import (
@@ -9,7 +10,6 @@ from kash.exec.preconditions import (
     is_url_resource,
 )
 from kash.kits.docs.actions.text.markdownify_doc import markdownify_doc
-from kash.kits.docs.actions.text.minify_html import minify_html
 from kash.model import (
     ONE_ARG,
     TWO_ARGS,
@@ -36,10 +36,14 @@ log = get_logger(__name__)
     params=(
         Param("add_title", "Add a title to the page body.", type=bool),
         Param("add_classes", "Space-delimited classes to add to the body of the page.", type=str),
+        Param("no_minify", "Skip HTML/CSS/JS/Tailwind minification step.", type=bool),
     ),
 )
 def textpress_format(
-    input: ActionInput, add_title: bool = False, add_classes: str | None = None
+    input: ActionInput,
+    add_title: bool = False,
+    add_classes: str | None = None,
+    no_minify: bool = False,
 ) -> ActionResult:
     md_item = markdownify_doc(input).items[0]
 
@@ -49,16 +53,18 @@ def textpress_format(
 
     raw_html_item = textpress_render_template(md_item, add_title=add_title, add_classes=add_classes)
 
-    # Disabling JS minification for now.
-    # https://github.com/wilsonzlin/minify-html/issues/236
-    minified_item = minify_html(raw_html_item, no_js_min=True)
+    if no_minify:
+        html_body = raw_html_item.body
+    else:
+        minified_item = minify_html(raw_html_item)
+        html_body = minified_item.body
 
     # Put the final formatted result as an export with the same title as the original.
     html_item = raw_html_item.derived_copy(
         type=ItemType.export,
         format=Format.html,
         title=title,
-        body=minified_item.body,
+        body=html_body,
     )
 
     log.message("Formatted HTML item from text item:\n%s", fmt_lines([md_item, html_item]))

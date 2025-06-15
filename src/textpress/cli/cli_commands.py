@@ -102,7 +102,9 @@ def convert(md_path: Path | Url) -> ActionResult:
     return markdownify_doc(input)
 
 
-def format(md_path: Path | Url, add_classes: str | None = None) -> ActionResult:
+def format(
+    md_path: Path | Url, add_classes: str | None = None, no_minify: bool = False
+) -> ActionResult:
     """
     Convert and format documents to pretty, formatted,
     minified HTML using the TextPress template.
@@ -116,10 +118,12 @@ def format(md_path: Path | Url, add_classes: str | None = None) -> ActionResult:
     from textpress.actions.textpress_format import textpress_format
 
     input = prepare_action_input(md_path)
-    return textpress_format(input, add_classes=add_classes)
+    return textpress_format(input, add_classes=add_classes, no_minify=no_minify)
 
 
-def publish(path: Path | Url, add_classes: str | None = None) -> ActionResult:
+def publish(
+    path: Path | Url, add_classes: str | None = None, no_minify: bool = False
+) -> ActionResult:
     """
     Publish (or re-publish) a document as a Textpress webpage.
 
@@ -130,7 +134,7 @@ def publish(path: Path | Url, add_classes: str | None = None) -> ActionResult:
     from textpress.actions.textpress_publish import textpress_publish
 
     input = prepare_action_input(path)
-    return textpress_publish(input, add_classes=add_classes)
+    return textpress_publish(input, add_classes=add_classes, no_minify=no_minify)
 
 
 def export(md_path: Path | Url) -> ActionResult:
