@@ -38,7 +38,7 @@ classifiers = [
 # ---- Main dependencies ----
 
 dependencies = [
-    "kash-docs[full]>=0.1.9",
+    "kash-docs[full]>=0.1.10",
     "flowmark>=0.4.6",
     "rich>=14.0.0",
     "clideps>=0.1.7",
@@ -68,7 +68,7 @@ tp = "textpress.cli.cli_main:main"
 # For bleeding edge:
 # kash-docs = { git = "https://github.com/jlevy/kash-docs.git" }
 # For local development:
-kash-docs = { path = "../kash-docs", editable = true }
+# kash-docs = { path = "../kash-docs", editable = true }
 # minify-tw-html = { path = "../../github/minify-tw-html", editable = true }
 
 # clideps = { path = "../clideps", editable = true }

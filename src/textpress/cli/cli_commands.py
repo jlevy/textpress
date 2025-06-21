@@ -128,10 +128,7 @@ def format(
 
 
 def publish(
-    path: Path | Url,
-    add_classes: str | None = None,
-    no_minify: bool = False,
-    pdf_converter: str = "marker",
+    path: Path | Url, add_classes: str | None = None, no_minify: bool = False
 ) -> ActionResult:
     """
     Publish (or re-publish) a document as a Textpress webpage.

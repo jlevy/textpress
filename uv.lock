@@ -1340,7 +1340,8 @@ wheels = [
 
 [[package]]
 name = "kash-docs"
-source = { editable = "../kash-docs" }
+version = "0.1.10"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "boto3" },
@@ -1363,54 +1364,20 @@ dependencies = [
     { name = "weasyprint" },
     { name = "wikipedia-api" },
 ]
+sdist = { url = "https://files.pythonhosted.org/packages/c7/84/2544f61b933c4fa177e78b46a5cc522fa243494c6101f8ddf0ac6635b3ac/kash_docs-0.1.10.tar.gz", hash = "sha256:2484e740a0977bd0d885787ecc1b35bcef1d57763ec63fe92b4b14e15bbcefb0", size = 2820299, upload-time = "2025-06-21T23:42:19.772Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/03/62/51de02be9f6243dbb532558cfba0299d293ab00a923bcb39f74d8dddfcfb/kash_docs-0.1.10-py3-none-any.whl", hash = "sha256:d5e3b1a202fd761e3dbc85be840187c8ca4103dd9b929651e3dfec65c73102ef", size = 1368723, upload-time = "2025-06-21T23:42:18.152Z" },
+]
 
 [package.optional-dependencies]
 full = [
     { name = "marker-pdf", extra = ["full"] },
 ]
 
-[package.metadata]
-requires-dist = [
-    { name = "beautifulsoup4", specifier = ">=4.13.4" },
-    { name = "boto3", specifier = ">=1.38.3" },
-    { name = "cachetools", specifier = ">=5.5.2" },
-    { name = "chopdiff", specifier = ">=0.1.3" },
-    { name = "flowmark", specifier = ">=0.4.2" },
-    { name = "html5lib", specifier = ">=1.1" },
-    { name = "kash-shell", git = "https://github.com/jlevy/kash.git" },
-    { name = "marker-pdf", extras = ["full"], marker = "extra == 'full'", specifier = ">=1.7.5" },
-    { name = "markitdown", extras = ["docx", "pdf"], specifier = ">=0.1.2" },
-    { name = "minify-html", specifier = ">=0.16.4" },
-    { name = "pandas", specifier = ">=2.2.3" },
-    { name = "pyrate-limiter", specifier = ">=3.7.0" },
-    { name = "python-docx", specifier = ">=1.1.2" },
-    { name = "requests", specifier = ">=2.32.3" },
-    { name = "rich", specifier = ">=14.0.0" },
-    { name = "rich-argparse", specifier = ">=1.7.0" },
-    { name = "tenacity", specifier = ">=9.1.2" },
-    { name = "thefuzz", specifier = ">=0.22.1" },
-    { name = "typing-extensions", specifier = ">=4.11.1" },
-    { name = "weasyprint", specifier = ">=63.1" },
-    { name = "wikipedia-api", specifier = ">=0.8.1" },
-]
-provides-extras = ["full"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "basedpyright", specifier = ">=1.28.2" },
-    { name = "clideps", specifier = ">=0.1.2" },
-    { name = "codespell", specifier = ">=2.4.1" },
-    { name = "funlog", specifier = ">=0.2.0" },
-    { name = "pytest", specifier = ">=8.3.5" },
-    { name = "pytest-sugar", specifier = ">=1.0.0" },
-    { name = "rich", specifier = ">=14.0.0" },
-    { name = "ruff", specifier = ">=0.11.0" },
-]
-
 [[package]]
 name = "kash-shell"
-version = "0.3.19.dev6+02df00b"
-source = { git = "https://github.com/jlevy/kash.git#02df00b91f09c5a1dcf2224a7510c24e4df46eb1" }
+version = "0.3.20"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
     { name = "audioop-lts", marker = "python_full_version >= '3.13'" },
@@ -1464,6 +1431,10 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "uvicorn" },
     { name = "xonsh" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0b/ff/b26b40b6db2d296256c2e43e5d60c220daadb2eced422dbac77d35cd5bcb/kash_shell-0.3.20.tar.gz", hash = "sha256:99464fe8211b8535949ba9125127d60c0fc78447202c9bf80b49d9ade2f684f6", size = 563964, upload-time = "2025-06-21T23:31:31.634Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/79/d8/731477a425306faf9facf4f09ba07e9b48b186a05e5d1cbd80c57ea70991/kash_shell-0.3.20-py3-none-any.whl", hash = "sha256:6d2b97738418483b54522f0928a64a93c3afbb764c78115576691e3c5f662243", size = 518197, upload-time = "2025-06-21T23:31:29.727Z" },
 ]
 
 [[package]]
@@ -3604,7 +3575,7 @@ dev = [
 requires-dist = [
     { name = "clideps", specifier = ">=0.1.7" },
     { name = "flowmark", specifier = ">=0.4.6" },
-    { name = "kash-docs", extras = ["full"], editable = "../kash-docs" },
+    { name = "kash-docs", extras = ["full"], specifier = ">=0.1.10" },
     { name = "rich", specifier = ">=14.0.0" },
 ]
 
