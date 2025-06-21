@@ -37,6 +37,13 @@ log = get_logger(__name__)
         Param("add_title", "Add a title to the page body.", type=bool),
         Param("add_classes", "Space-delimited classes to add to the body of the page.", type=str),
         Param("no_minify", "Skip HTML/CSS/JS/Tailwind minification step.", type=bool),
+        Param(
+            name="pdf_converter",
+            description="The converter to use to convert the PDF to Markdown.",
+            type=str,
+            default_value="marker",
+            valid_str_values=["markitdown", "marker"],
+        ),
     ),
 )
 def textpress_format(
@@ -44,8 +51,9 @@ def textpress_format(
     add_title: bool = False,
     add_classes: str | None = None,
     no_minify: bool = False,
+    pdf_converter: str = "marker",
 ) -> ActionResult:
-    md_item = markdownify_doc(input).items[0]
+    md_item = markdownify_doc(input, pdf_converter=pdf_converter).items[0]
 
     # Export the text item with original title or the heading if we can get it from the body.
     title = md_item.title or md_item.body_heading()

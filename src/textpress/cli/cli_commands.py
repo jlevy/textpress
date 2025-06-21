@@ -85,33 +85,39 @@ def files(all: bool = False) -> None:
     files(ws.base_dir, overview=True, all=all)
 
 
-def convert(md_path: Path | Url) -> ActionResult:
+def convert(md_path: Path | Url, pdf_converter: str = "marker") -> ActionResult:
     """
     Convert a document to clean Markdown.
 
-    This works well to convert docx files, especially Gemini Deep Research
-    output: click to export a report to Google Docs, then select `File >
+    Handles HTML, PDF, and docx files. It's not guaranteed to be perfect but it's
+    often quite good. To fix any issues, run `convert`, then manually make edits
+    to the result before using `format` or `publish`.
+    This is designed to work well to convert Gemini Deep Research docx files:
+    To try this out, use Gemini Deep Research to get a report, then
+    click to export a report to Google Docs, then select `File >
     Download > Microsoft Word (.docx)`.
-    Uses MarkItDown/Mammoth/Markdownify and a few additional cleanups to
-    convert docx files and flowmark for clean Markdown formatting.
+
+    Uses Marker (for PDF) and MarkItDown/Mammoth (for docx) as well as Markdownify
+    and flowmark to get clean Markdown formatting results.
     """
     from kash.exec import prepare_action_input
     from kash.kits.docs.actions.text.markdownify_doc import markdownify_doc
 
     input = prepare_action_input(md_path)
-    return markdownify_doc(input)
+    return markdownify_doc(input, pdf_converter=pdf_converter)
 
 
 def format(
     md_path: Path | Url, add_classes: str | None = None, no_minify: bool = False
 ) -> ActionResult:
     """
-    Convert and format documents to pretty, formatted,
-    minified HTML using the TextPress template.
+    Convert and format documents to pretty, formatted, minified HTML using the TextPress template.
 
-    Input can be text, Markdown, or an HTML fragment. Result contains clean Markdown
-    and HTML. Supports GFM-flavored Markdown tables and footnotes.
-    Uses `convert` to do the conversion to clean Markdown.
+    Input can be text or Markdown or any format handled by `convert`.
+    Result contains clean Markdown and HTML. Supports GFM-flavored Markdown
+    and HTML, including GFM-flavored Markdown tables and footnotes.
+    Calls `convert` (with the default "marker" converter) to do necessary
+    conversions.
     """
     from kash.exec import prepare_action_input
 
@@ -122,7 +128,10 @@ def format(
 
 
 def publish(
-    path: Path | Url, add_classes: str | None = None, no_minify: bool = False
+    path: Path | Url,
+    add_classes: str | None = None,
+    no_minify: bool = False,
+    pdf_converter: str = "marker",
 ) -> ActionResult:
     """
     Publish (or re-publish) a document as a Textpress webpage.
