@@ -2,7 +2,10 @@
 
 This is the Textpress CLI. See [Textpress](https://textpress.md) for more info.
 Things are new and still have some rough edges.
+
 But please read more there and give it a try!
+Please [start a discussion](https://github.com/jlevy/textpress/discussions) if you have
+feedback, feature requests, or other ideas.
 
 * * *
 
