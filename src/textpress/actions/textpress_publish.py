@@ -61,7 +61,7 @@ def textpress_publish(
 
     # Save the manifest so we have it but don't include it in the output.
     manifest_item = Item(
-        type=ItemType.config,
+        type=ItemType.data,
         format=Format.json,
         title=f"Textpress Manifest: {item.title}",
         body=manifest.model_dump_json(indent=2),
