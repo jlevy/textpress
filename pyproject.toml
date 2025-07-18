@@ -40,7 +40,7 @@ classifiers = [
 dependencies = [
     "kash-docs[full]>=0.1.11",
     "kash-shell>=0.1.22",
-    "flowmark>=0.4.6",
+    "flowmark>=0.4.9",
     "rich>=14.0.0",
     "clideps>=0.1.7",
 ]
