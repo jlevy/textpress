@@ -38,11 +38,11 @@ classifiers = [
 # ---- Main dependencies ----
 
 dependencies = [
-    "kash-docs[full]>=0.1.11",
+    "kash-docs[full]>=0.1.13",
     "kash-shell>=0.1.22",
-    "flowmark>=0.4.9",
-    "rich>=14.0.0",
+    "flowmark>=0.5.0",
     "clideps>=0.1.7",
+    "rich>=14.0.0",
 ]
 
 
