@@ -185,6 +185,23 @@
     width: 0.9rem;
     height: 0.9rem;
   }
+
+  /* Print styles */
+  @media print {
+    /* Hide web-only elements */
+    .textpress-header,
+    .textpress-footer {
+      display: none;
+    }
+
+    /* All pages: Textpress attribution on bottom left, page numbers on bottom right */
+    @page {
+
+      @bottom-left {
+        content: "Formatted by textpress.md" !important;
+      }
+    }
+  }
 </style>
 <!-- textpress_webpage end head_extra block -->
 {% endblock head_extra %}
