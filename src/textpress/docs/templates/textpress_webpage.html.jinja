@@ -144,10 +144,9 @@
   }
 
   .boxed-text {
-    border: 1px solid hsl(140, 2%, 34%);
-    padding: 0.2rem 1.2rem;
-    border-radius: 4px;
-    margin: 2rem 0;
+    border: 1px solid var(--color-border-hairline);
+    padding: 0 1rem;
+    margin: 1rem 0;
   }
   .shaded-text {
     background-color: var(--color-bg-alt);
@@ -192,6 +191,12 @@
     .textpress-header,
     .textpress-footer {
       display: none;
+    }
+
+    /* Prevent boxed text from breaking across pages */
+    .boxed-text {
+      break-inside: avoid;
+      page-break-inside: avoid; /* Fallback for older browsers */
     }
 
     /* All pages: Textpress attribution on bottom left, page numbers on bottom right */
