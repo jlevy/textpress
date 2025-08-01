@@ -35,8 +35,6 @@ from textpress.cli.cli_commands import (
 )
 
 APP_NAME = "textpress"
-KASH_SHELL = "kash-shell"
-KASH_DOCS = "kash-docs"
 
 DESCRIPTION = """Textpress: Simple publishing for complex docs"""
 
@@ -48,12 +46,15 @@ ALL_COMMANDS = [help, setup, paste, files, convert, format, publish, export]
 ACTION_COMMANDS = [convert, format, publish, export]
 
 
-def get_version_name() -> str:
+def get_version_name(with_kash: bool = False) -> str:
     try:
         textpress_version = version(APP_NAME)
-        kash_version = version(KASH_SHELL)
-        kash_docs_version = version(KASH_DOCS)
-        return f"{APP_NAME} v{textpress_version} ({KASH_SHELL} v{kash_version}, {KASH_DOCS} v{kash_docs_version})"
+        if with_kash:
+            from kash.shell.version import get_full_version_name
+
+            return f"{APP_NAME} v{textpress_version} ({get_full_version_name(True)})"
+        else:
+            return f"{APP_NAME} v{textpress_version}"
     except Exception:
         return "(unknown version)"
 
@@ -93,7 +94,7 @@ def build_parser() -> argparse.ArgumentParser:
         epilog=dedent((__doc__ or "") + "\n\n" + get_version_name()),
         description=DESCRIPTION,
     )
-    parser.add_argument("--version", action="version", version=get_version_name())
+    parser.add_argument("--version", action="store_true", help="show version and exit")
 
     # Common arguments for all actions.
     parser.add_argument(
@@ -106,7 +107,7 @@ def build_parser() -> argparse.ArgumentParser:
     add_general_flags(parser)
 
     # Parsers for each command.
-    subparsers = parser.add_subparsers(dest="subcommand", required=True)
+    subparsers = parser.add_subparsers(dest="subcommand", required=False)
 
     # Add options for each command.
     for func in ALL_COMMANDS:
@@ -383,6 +384,16 @@ def main() -> None:
     get_console().width = get_readable_console_width()
     parser = build_parser()
     args = parser.parse_args()
+
+    # Handle lazily to keep --help fast.
+    if args.version:
+        rprint(get_version_name(with_kash=True))
+        return
+
+    # Handle case where no subcommand is provided
+    if not args.subcommand:
+        parser.print_help()
+        return
 
     # As a convenience also allow dashes in the subcommand name.
     subcommand = args.subcommand.replace("-", "_")
