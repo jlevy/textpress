@@ -19,7 +19,7 @@ log = get_logger(__name__)
 
 @kash_action(precondition=is_url_resource | is_docx_resource | has_html_body | has_simple_text_body)
 def textpress_export(input: ActionInput) -> ActionResult:
-    md_item = markdownify_doc(input).items[0]
+    md_item = markdownify_doc(input.items[0])
 
     docx_item = create_docx(md_item)
     pdf_item = create_pdf(md_item)

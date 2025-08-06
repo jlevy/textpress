@@ -102,9 +102,10 @@ def convert(md_path: Path | Url, pdf_converter: str = "marker") -> ActionResult:
     """
     from kash.exec import prepare_action_input
     from kash.kits.docs.actions.text.markdownify_doc import markdownify_doc
+    from kash.model import ActionResult
 
     input = prepare_action_input(md_path)
-    return markdownify_doc(input, pdf_converter=pdf_converter)
+    return ActionResult(items=[markdownify_doc(input.items[0], pdf_converter=pdf_converter)])
 
 
 def format(

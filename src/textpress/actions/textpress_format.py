@@ -53,7 +53,7 @@ def textpress_format(
     no_minify: bool = False,
     pdf_converter: str = "marker",
 ) -> ActionResult:
-    md_item = markdownify_doc(input, pdf_converter=pdf_converter).items[0]
+    md_item = markdownify_doc(input.items[0], pdf_converter=pdf_converter)
 
     # Export the text item with original title or the heading if we can get it from the body.
     title = md_item.title or md_item.body_heading()
