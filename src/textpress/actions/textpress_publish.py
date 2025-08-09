@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from kash.config.logger import get_logger
 from kash.exec import kash_action
 from kash.exec.preconditions import (
@@ -19,6 +21,7 @@ from kash.model import (
 )
 from kash.workspaces import current_ws
 from prettyfmt import fmt_lines, fmt_path
+from sidematter_format import Sidematter
 
 from textpress.actions.textpress_format import textpress_format
 from textpress.api.textpress_api import publish_files
@@ -52,10 +55,38 @@ def textpress_publish(
     md_item = format_result.get_by_format(Format.markdown, Format.md_html)
     html_item = format_result.get_by_format(Format.html)
 
-    upload_paths = [md_item.absolute_path(), html_item.absolute_path()]
-    log.message("Publishing files:\n%s", fmt_lines(upload_paths))
+    md_path = md_item.absolute_path()
+    html_path = html_item.absolute_path()
 
-    manifest = publish_files(upload_paths)
+    def sidematter_uploads(primary: Path) -> dict[str, Path]:
+        sm = Sidematter(primary).resolve(parse_meta=False)
+        out: dict[str, Path] = {}
+        if sm.meta_path and sm.meta_path.exists():
+            # Upload meta as a sibling file (just the filename)
+            out[sm.meta_path.name] = sm.meta_path
+        if sm.assets_dir and sm.assets_dir.is_dir():
+            # Upload all files under <stem>.assets, preserving subpaths
+            for p in sm.assets_dir.rglob("*"):
+                if p.is_file():
+                    rel = p.relative_to(sm.assets_dir)
+                    upload = f"{sm.assets_dir.name}/{rel.as_posix()}"
+                    out[upload] = p
+        return out
+
+    # Build upload set: originals, plus any sidematter (meta + assets) for each
+    upload_map: dict[str, Path] = {
+        md_path.name: md_path,
+        html_path.name: html_path,
+    }
+    # Use just one of the files for the sidematter (since they share the sidematter).
+    upload_map.update(sidematter_uploads(md_path))
+
+    files_with_paths: list[tuple[Path, str]] = [(p, up) for up, p in upload_map.items()]
+    log.message(
+        "Publishing files:\n%s",
+        fmt_lines([up for _p, up in upload_map.items()]),
+    )
+    manifest = publish_files(files_with_paths)
 
     log.message("Published: %s", list(manifest.files.keys()))
 

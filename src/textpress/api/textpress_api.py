@@ -148,11 +148,11 @@ def get_user(config: ApiConfig) -> UserProfileResponse:
 def get_presigned_urls(
     config: ApiConfig,
     base_version: int,
-    files_to_upload: list[Path],
+    files_to_upload: list[tuple[Path, str]],
     files_to_delete: list[str] | None = None,
 ) -> PresignResponse:
     """
-    Gets presigned URLs for uploading files.
+    Gets presigned URLs for uploading files, preserving provided upload paths.
     """
     from kash.utils.file_utils.file_formats_model import Format, detect_file_format
 
@@ -162,13 +162,13 @@ def get_presigned_urls(
     uploads_metadata: list[UploadFileMetadata] = []
     delete_metadata: list[DeleteFileMetadata] = []
 
-    for file_path in files_to_upload:
+    for file_path, upload_path in files_to_upload:
         if not file_path.is_file():
             raise FileNotFoundError(f"File not found: {file_path}")
         format = detect_file_format(file_path) or Format.binary
         mime = format.mime_type or "application/octet-stream"
         md5 = hash_file(file_path, "md5").hex  # API expects hex
-        uploads_metadata.append(UploadFileMetadata(path=file_path.name, md5=md5, contentType=mime))
+        uploads_metadata.append(UploadFileMetadata(path=upload_path, md5=md5, contentType=mime))
 
     for file_path_str in files_to_delete:
         delete_metadata.append(DeleteFileMetadata(path=file_path_str))
@@ -239,10 +239,10 @@ def sync_commit(
 
 
 def publish_files(
-    upload_paths: list[Path], delete_paths: list[str] | None = None
+    files_with_paths: list[tuple[Path, str]], delete_paths: list[str] | None = None
 ) -> ManifestResponse:
     """
-    Publishes files (uploads and deletes) to Textpress.
+    Publishes files (uploads and deletes) to Textpress using explicit upload paths.
     """
     from textpress.api.http_client import get_http_client
 
@@ -255,22 +255,23 @@ def publish_files(
     log_api("<< get_manifest response: %s", manifest)
 
     presign_response: PresignResponse = get_presigned_urls(
-        config, manifest.version, upload_paths, delete_paths
+        config, manifest.version, files_with_paths, delete_paths
     )
 
     upload_info_map = {info.path: info for info in presign_response.uploads}
 
     upload_client = get_http_client()
     uploaded_files_details: list[PresignUploadInfo] = []
-    for file_path in upload_paths:
-        if file_path.name in upload_info_map:
-            upload_info = upload_info_map[file_path.name]
+    for file_path, upload_path in files_with_paths:
+        if upload_path in upload_info_map:
+            upload_info = upload_info_map[upload_path]
             upload_file(upload_client, file_path, upload_info.model_dump())
             uploaded_files_details.append(upload_info)
         else:
             log_api(
-                "File %s was requested for upload but not included in presign response (already up-to-date?)",
-                file_path.name,
+                "File %s (%s) was requested for upload but not included in presign response (already up-to-date?)",
+                file_path,
+                upload_path,
             )
 
     commit_response: ManifestResponse = sync_commit(
