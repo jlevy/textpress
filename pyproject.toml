@@ -38,10 +38,12 @@ classifiers = [
 # ---- Main dependencies ----
 
 dependencies = [
+    # Pinning beta versions for stability for now.
     "kash-docs[full]==0.1.19",
-    "flowmark>=0.5.0",
-    "sidematter-format>=0.0.5",
-    "clideps>=0.1.7",
+    "flowmark==0.5.3",
+    "sidematter-format==0.0.5",
+    "clideps==0.1.7",
+    "chopdiff==0.2.6",
     "rich>=14.0.0",
 ]
 
