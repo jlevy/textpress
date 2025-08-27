@@ -19,6 +19,8 @@ from kash.model import (
     ItemType,
     Param,
 )
+from kash.web_gen.webpage_render import copy_item_sidematter, rewrite_item_image_urls
+from kash.workspaces import current_ws
 from prettyfmt import fmt_lines
 
 from textpress.actions.textpress_render_template import textpress_render_template
@@ -53,12 +55,12 @@ def textpress_format(
     no_minify: bool = False,
     pdf_converter: str = "marker",
 ) -> ActionResult:
-    md_item = markdownify_doc(input.items[0], pdf_converter=pdf_converter)
+    original_item = input.items[0]
+    md_item = markdownify_doc(original_item, pdf_converter=pdf_converter)
+    log.message("Original textpress_format input:\n%s", fmt_lines([original_item, md_item]))
 
     # Export the text item with original title or the heading if we can get it from the body.
     title = md_item.title or md_item.body_heading()
-    md_item = md_item.derived_copy(type=ItemType.export, title=title)
-
     raw_html_item = textpress_render_template(md_item, add_title=add_title, add_classes=add_classes)
 
     if no_minify:
@@ -67,15 +69,21 @@ def textpress_format(
         minified_item = minify_html(raw_html_item)
         html_body = minified_item.body
 
-    # Put the final formatted result as an export with the same title as the original.
-    html_item = raw_html_item.derived_copy(
-        type=ItemType.export,
-        format=Format.html,
-        title=title,
-        body=html_body,
+    # Put the final results as an export with the same title as the original.
+    export_md_item = md_item.derived_copy(type=ItemType.export, title=title)
+    export_html_item = raw_html_item.derived_copy(
+        type=ItemType.export, format=Format.html, title=title, body=html_body
     )
 
-    log.message("Formatted HTML item from text item:\n%s", fmt_lines([md_item, html_item]))
+    # Copy any sidematter, if present.
+    ws = current_ws()
+    ws.assign_store_path(export_html_item)
+    from_prefix, to_prefix = copy_item_sidematter(original_item, export_html_item)
+
+    # Rewrite any image URLs to point to the new location.
+    rewrite_item_image_urls(export_html_item, from_prefix, to_prefix)
+
+    log.message("Formatted HTML item from text item:\n%s", fmt_lines([md_item, export_html_item]))
     if is_pdf_resource(input.items[0]):
         log.warning(
             "Converting from PDF to Markdown is not as reliable as from HTML or .docx. Check the output to confirm its quality!"
@@ -83,4 +91,4 @@ def textpress_format(
 
     # Setting overwrite means we'll always pick the same output paths and
     # both .html and .md filenames will match.
-    return ActionResult(items=[md_item, html_item], overwrite=True)
+    return ActionResult(items=[export_md_item, export_html_item], overwrite=True)

@@ -38,7 +38,7 @@ classifiers = [
 # ---- Main dependencies ----
 
 dependencies = [
-    "kash-docs[full]>=0.1.15",
+    "kash-docs[full]==0.1.19",
     "flowmark>=0.5.0",
     "sidematter-format>=0.0.5",
     "clideps>=0.1.7",
@@ -67,8 +67,8 @@ tp = "textpress.cli.cli_main:main"
 
 [tool.uv.sources]
 # For bleeding edge:
-kash = { git = "https://github.com/jlevy/kash.git" }
-kash-docs = { git = "https://github.com/jlevy/kash-docs.git" }
+# kash = { git = "https://github.com/jlevy/kash.git" }
+# kash-docs = { git = "https://github.com/jlevy/kash-docs.git" }
 # For local development:
 # kash-shell = { path = "../kash", editable = true }
 # kash-docs = { path = "../kash-docs", editable = true }
@@ -92,7 +92,7 @@ source = "uv-dynamic-versioning"
 [tool.uv-dynamic-versioning]
 vcs = "git"
 style = "pep440"
-bump = "true"
+bump = true
 
 [tool.hatch.build.targets.wheel]
 # The source location for the package.
