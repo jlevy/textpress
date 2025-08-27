@@ -33,7 +33,7 @@ def setup(show: bool = False) -> None:
     Run this first! Set up your API key to use with Textpress.
 
     You can rerun this to get your API key again or use `--show` to confirm
-    your setup. (If you prefer, you can instead set the `TEXPRESS_API_KEY`
+    your setup. (If you prefer, you can instead set the `TEXTPRESS_API_KEY`
     environment variable yourself.)
     """
     from textpress.cli.cli_setup import interactive_setup, show_setup
